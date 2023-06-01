@@ -2,7 +2,7 @@ import axios from 'axios';
 import { isDateWithinInterval, compareDates } from '../../functions/datetime';
 import { serializeEvent } from '../../functions/serializers';
 
-const apiUrl = 'https://localhost:9292';
+const apiUrl = 'https://atcalperapp.herokuapp.com';
 
 const state = {
   events: [],
