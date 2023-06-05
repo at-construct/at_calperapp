@@ -1,0 +1,22 @@
+#docker-composeのバージョン
+version: '3'
+services:
+  db:
+    image: postgres
+    container_name: calappdocker-db
+    volumes:
+      - ./tmp/db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: password
+  web:
+    build: .
+    container_name: calappdocker-web
+    command: bundle exec rails s -p 5050 -b '0.0.0.0'
+    tty: true
+    stdin_open: true
+    depends_on:
+      - db # DB側のコンテナが出来上がってからwebを実行する
+    ports:
+      - "5050:5050" # ホストからゲストへポートフォワード
+    volumes:
+      - .:/calappdocker # ソースコード変更したらDocker側も即反映されるように
