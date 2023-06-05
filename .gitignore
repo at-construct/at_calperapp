@@ -1,0 +1,41 @@
+# Ignore bundler config.
+/.bundle
+
+# Ignore all logfiles and tempfiles.
+# /log/*
+# /tmp/*
+# !/log/.keep
+# !/tmp/.keep
+
+# Ignore pidfiles, but keep the directory.
+# /tmp/pids/*
+# !/tmp/pids/
+# !/tmp/pids/.keep
+
+# Ignore uploaded files in development.
+# /storage/*
+# !/storage/.keep
+
+# /public/assets
+# .byebug_history
+
+# Ignore master key for decrypting credentials and more.
+# /config/master.key
+
+# /public/packs
+/public/packs-test
+yarn-error.log
+.yarn-integrity
+/node_modules/
+/auth/
+localhost-key.pem
+localhost.pem
+.git
+/vendor/
+/tmp/
+.DS_Store
+
+# Ignore Heroku-related files and directories
+/node_modules/
+/log/
+/tmp/
