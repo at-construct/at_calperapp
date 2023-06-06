@@ -165,10 +165,10 @@ export default {
     ...mapGetters('groups', ['groups']),
     ...mapGetters('events', ['clickedDate']),
     filteredCalendars() {
-      return this.calendars.filter(calendar => calendar.name !== '会議室' && calendar.name !== '社用車' );
+      return this.calendars.filter(calendar => calendar.name !== '会議室' && calendar.name !== '社用車' && calendar.name !== 'スタジオ');
     },
     facilityCalendar() {
-      return this.calendars.filter(calendar => calendar.name === '会議室' || calendar.name === '社用車' );
+      return this.calendars.filter(calendar => calendar.name === '会議室' || calendar.name === '社用車' || calendar.name === 'スタジオ');
     },
     title() {
       return format(new Date(this.value), 'yyyy年 M月');

@@ -47,7 +47,7 @@ export default {
   computed: {
     ...mapGetters('users', ['users']),
     filteredUsers() {
-      return this.users.filter(user => user.name !== '会議室' && user.name !== 'ホールA' && user.name !== 'ハイエース');
+      return this.users.filter(user => user.name !== '会議室A' && user.name !== 'ホールA' && user.name !== 'ハイエース');
     },
   },
   created() {

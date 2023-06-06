@@ -6,7 +6,7 @@
       </v-btn>
     </v-card-actions>
     <v-card-title class="d-flex justify-center">
-      {{ formatDateToJa(otherClickedDate) }}
+      {{ formatDateToJa(clickedDate) }}
     </v-card-title>
     <v-card-text>
       <v-list>
@@ -16,7 +16,6 @@
               depressed
               :color="event.color"
               class="white--text justify-start"
-              @click="$event =>showEvent({ $event, event })"
             >
               <span class="event-date">{{ event.startDate.slice(5) }}{{ event.timed ? ' ' + event.startTime : ''}} ~
               {{ event.endDate.slice(5) }} 
@@ -42,25 +41,17 @@ export default {
     value: format(new Date(), 'yyyy/MM/dd'),
     drawer: false,
     group: null,
-    dialog: null
+    dialog: null,
   }),
   computed: {
-    ...mapGetters('events', ['dayEvents', 'otherClickedDate']),
+    ...mapGetters('events', ['dayEvents', 'clickedDate']),
   },
   methods: {
-    ...mapActions('events', ['otherSetClickedDate', 'setEvent']),
+    ...mapActions('events', ['setClickedDate', 'setEvent']),
     formatDateToJa,
 
-    showEvent({ nativeEvent, event }) {
-      this.setEvent(event);
-      this.closeDialog();
-      if (nativeEvent) {
-        nativeEvent.stopPropagation();
-      }
-    },
-
     closeDialog() {
-      this.otherSetClickedDate(null);
+      this.setClickedDate(null);
     }
   }
 };
