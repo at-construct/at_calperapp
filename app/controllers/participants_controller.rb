@@ -25,7 +25,7 @@ class ParticipantsController < ApplicationController
   #   else
   #     render json: event.errors, status: 422
   #   end
-  # end
+  # endz
 
   def event_excerpt
     #participantに紐づくeventの抜粋して返す

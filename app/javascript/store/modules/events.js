@@ -49,7 +49,7 @@ const actions = {
     commit('setEvents', response.data);
   },
   async fetchEvents({ commit }) {
-    const response = await axios.get(`${apiUrl}/events`);
+    const response = await axios.get(`${apiUrl}/events/index_with_participants`);
     commit('setEvents', response.data);
   },
   async createEvent({ commit }, event) {

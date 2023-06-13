@@ -8,6 +8,13 @@ class EventsController < ApplicationController
     render json: current_user.events.to_json
   end
 
+  def index_with_participants
+    user_events = current_user.events
+    participant_events = current_user.participants.map(&:event)
+    all_events = user_events + participant_events
+    render json: all_events.to_json
+  end
+
   def show
     # 指定したidのイベントデータを返す
     render json: Event.find(params[:id])

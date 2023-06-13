@@ -8,6 +8,7 @@ const state = {
   participantUsers: [],
   isEditModeParticipantUser: false,
   editModeParticipantUser: null,
+  selectedParticipants: [],
 };
 
 const getters = {
@@ -29,6 +30,7 @@ const getters = {
     }),
   participantUsers: state => state.participantUsers,
   isEditModeParticipantUser: state => state.isEditModeParticipantUser,
+  selectedParticipants: (state) => state.selectedParticipants,
 };
 
 const mutations = {
@@ -61,6 +63,9 @@ const mutations = {
       (user) => user.id !== participantUser.id
     )),
   setEditModeParticipantUser: (state, bool) => (state.isEditModeParticipantUser = bool),
+  setSelectedParticipants(state, participants) {
+    state.selectedParticipants = participants;
+  },
 };
 
 const actions = {
@@ -126,6 +131,9 @@ const actions = {
   },
   setEditModeParticipantUser({ commit }, bool) {
     commit('setEditModeParticipantUser', bool);
+  },
+  setSelectedParticipants({ commit }, participants) {
+    commit('setSelectedParticipants', participants);
   },
 };
 
