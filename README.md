@@ -1,5 +1,16 @@
-#どんなアプリか？
-rakuomoやgoogleカレンダーのようなスケジュール管理アプリ
+### アプリ名
+CompanyPlanner
+
+### アプリについて
+ビジネスや組織にとって役立つ、包括的な計画やスケジュール管理機能を提供します。
+googleカレンダーのようなUIで、rakumoカレンダーのように会社間で共有できるSPAアプリです。
+
+### アプリ開発背景
+
+### URL
+https://atcalperapp.herokuapp.com/
+
+### 使用技術
 
 #バンドラー
 Bundler version 1.17.2(最初はこれで開発 HEROKU stack-18)
