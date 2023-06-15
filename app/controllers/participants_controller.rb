@@ -25,7 +25,7 @@ class ParticipantsController < ApplicationController
   #   else
   #     render json: event.errors, status: 422
   #   end
-  # end
+  # endz
 
   def event_excerpt
     #participantに紐づくeventの抜粋して返す
@@ -55,6 +55,15 @@ class ParticipantsController < ApplicationController
   #   render json: User.where.not(id: current_user.id)
   # end
 
+  def all
+    participants = Participant.all
+    participant_events = participants.map do |participant|
+      participant_event = participant.event.attributes
+      participant_event["participant_id"] = participant.user_id
+      participant_event
+    end
+    render json: participant_events
+  end
 
   #改修してdevise_token_authを使おう(セキュリティ上) 一旦はこれを使う
   skip_before_action :verify_authenticity_token

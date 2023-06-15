@@ -1,6 +1,13 @@
 <template>
-  <v-card style="width: 90%; height: 90%;">
-    <v-card-text style="height: calc(100% - 64px);">
+  <v-card style="width: 90%; height: 100%;">
+    <v-card-text style="height: calc(100% - 80px);">
+      <v-sheet max-height="10vh">
+        <v-toolbar flat style="height: 40px;">
+          <div style="display: flex; justify-content: center; align-items: center; width: 100%; font-size: 16px">
+            {{ group.user.name }}の予定
+          </div>
+        </v-toolbar>
+      </v-sheet>  
       <v-sheet max-height="10vh">
         <v-toolbar flat>
           <v-btn icon @click="closeDialog">
@@ -28,22 +35,23 @@
       <v-calendar
         ref="calendar"
         v-model="value"
-        :events="events"
-        @change="fetchEvents"
+        :events="userEvents.concat(participantAllUserEvents)"
+        @change="handleCalendarChange"
         style="height: 100%;"
         locale="ja-jp"
         :day-format="timestamp => new Date(timestamp.date).getDate()"
         :month-format="timestamp => new Date(timestamp.date).getMonth() + 1 + ' /'"
-        @click:date="otherShowDayEvents"
-        @click:more="otherShowDayEvents"
+        @click:day="initEvent"
+        @click:date="showDayEvents"
+        @click:more="showDayEvents"
       ></v-calendar>
 
       <!-- 日付クリック時のイベント一覧ダイアログ -->
       <v-dialog
-        :value="otherClickedDate !== null"
+        :value="clickedDate !== null"
         persistent
         max-width="800"
-        max-high="800"
+        max-height="800"
       >
         <OtherDayEventList />
       </v-dialog>
@@ -60,6 +68,7 @@ import OtherDayEventList from '../events/OtherDayEventList';
 export default {
   name: 'OtherCalendar',
   components: { OtherDayEventList },
+  props: ['group'] ,
   data() {
     return {
       selectedCalendar: null,
@@ -68,38 +77,53 @@ export default {
   },
   computed: {
     ...mapGetters('calendars', ['calendars']),
-    ...mapGetters('events', ['events', 'otherClickedDate']),
+    ...mapGetters('events', ['events', 'event', 'clickedDate']),
+    ...mapGetters('participants', ['participantEvents','participantAllEvents']),
     title() {
       return format(new Date(this.value), 'yyyy年 M月');
     },
+    userEvents() {
+      // events の中から group.user.id と一致する user_id をもつイベントをフィルタリング
+      return this.events.filter(event => event.user_id === this.group.user.id);
+    },
+    participantAllUserEvents() {
+      return this.participantAllEvents.filter(event => event.participant_id === this.group.user.id);
+    },
+
   },
   created() {
     this.fetchCalendars();
   },
   methods: {
-    ...mapActions('calendars', ['fetchCalendars']),
-    ...mapActions('events', ['fetchEvents','otherSetClickedDate', 'otherShowDayEvents']),
+    handleCalendarChange(newValue) {
+      this.fetchAllEvents(); // 全てのイベントを取得
+      this.fetchParticipantAllEvents(); // すべての参加者を取得
+    },
 
+    ...mapActions('calendars', ['fetchCalendars']),
+    ...mapActions('events', ['fetchEvents', 'setEvent', 'setClickedDate', 'fetchAllEvents']),
+    ...mapActions('participants', ['fetchParticipantEvents', 'fetchParticipantAllEvents']),
     setToday() {
       this.value = format(new Date(), 'yyyy/MM/dd');
     },
     closeDialog() {
-      this.$emit('close'); // クローズイベントを親コンポーネントに通知
-      this.otherSetClickedDate(null);
+      this.$emit('close'); // 親コンポーネントにイベントを送信
+      this.setClickedDate(null); // クリックした日付を初期化
+      this.fetchEvents(); // イベントを初期化
     },
-    otherShowDayEvents({ date }) {
+    initEvent({ date }) {
+      if (this.clickedDate !== null || !date) { // dateがnullの場合にもチェックする
+        return;
+      }
       date = date.replace(/-/g, '/');
-      this.otherSetClickedDate(date);
+      const [start, end] = getDefaultStartAndEnd(date);
+      this.setEvent({ name: '', start, end, timed: true });
+      this.setEditMode(true);
+    },
+    showDayEvents({ date }) {
+      date = date.replace(/-/g, '/');
+      this.setClickedDate(date);
     },
   }
 };
 </script>
-
-<style>
-.saturday {
-  background: rgba(200, 200, 250, 0.2);
-}
-.sunday {
-  background: rgba(250, 200, 200, 0.2);
-}
-</style>

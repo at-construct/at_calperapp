@@ -115,7 +115,11 @@
       fullscreen
       hide-overlay
     >
-      <OtherCalendar @close="isCalendarDialogOpen = false" />
+      <OtherCalendar
+        v-if="isCalendarDialogOpen"
+        :group="selectedGroup"
+        @close="handleOtherCalendarClose"
+      />
     </v-dialog>
 
     <!-- 日付クリック時のイベント一覧ダイアログ -->
@@ -150,6 +154,7 @@ export default {
     return {
       selectedItem: [],
       selectedGroups: [],
+      selectedGroup: null,
       isCalendarDialogOpen: false,
       // events:[],
       value: format(new Date(), 'yyyy/MM/dd'),
@@ -160,10 +165,10 @@ export default {
     ...mapGetters('groups', ['groups']),
     ...mapGetters('events', ['clickedDate']),
     filteredCalendars() {
-      return this.calendars.filter(calendar => calendar.name !== '会議室' && calendar.name !== '社用車');
+      return this.calendars.filter(calendar => calendar.name !== '会議室' && calendar.name !== '社用車' && calendar.name !== 'スタジオ');
     },
     facilityCalendar() {
-      return this.calendars.filter(calendar => calendar.name === '会議室' || calendar.name === '社用車');
+      return this.calendars.filter(calendar => calendar.name === '会議室' || calendar.name === '社用車' || calendar.name === 'スタジオ');
     },
     title() {
       return format(new Date(this.value), 'yyyy年 M月');
@@ -190,6 +195,7 @@ export default {
     },
     openCalendarDialog(group) {
       this.selectedCalendar = group.calendar;
+      this.selectedGroup = group;
       this.isCalendarDialogOpen = true;
     },
 
@@ -200,6 +206,9 @@ export default {
 
     closeDialog() {
       this.setCalendar(null);
+    },
+    handleOtherCalendarClose() {
+      this.isCalendarDialogOpen = false;
     },
   }
 };

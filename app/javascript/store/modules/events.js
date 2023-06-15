@@ -30,6 +30,7 @@ const getters = {
 };
 
 const mutations = {
+  setAllevents: (state, events) => (state.events = events),
   setEvents: (state, events) => (state.events = events),
   appendEvent: (state, event) => (state.events = [...state.events, event]),
   setEvent: (state, event) => (state.event = event),
@@ -42,10 +43,13 @@ const mutations = {
   setClickedDate: (state, date) => (state.clickedDate = date),
   otherSetClickedDate: (state, date) => (state.otherClickedDate = date),
 };
-
 const actions = {
+  async fetchAllEvents({ commit }) {
+    const response = await axios.get(`${apiUrl}/events/all`);
+    commit('setEvents', response.data);
+  },
   async fetchEvents({ commit }) {
-    const response = await axios.get(`${apiUrl}/events`);
+    const response = await axios.get(`${apiUrl}/events/index_with_participants`);
     commit('setEvents', response.data);
   },
   async createEvent({ commit }, event) {

@@ -33,6 +33,7 @@ Rails.application.routes.draw do
       get 'user_excerpt' # /participants/user_excerpt
       post 'user_excerpt' # /participants/user_excerpt
       get 'events_with_participants' # /participants/events_with_participants
+      get 'all' # /participants/all
     end
   end
 

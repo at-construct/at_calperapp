@@ -47,18 +47,17 @@
         <TextForm v-model="description" />
       </DialogSection>
 
-      <!-- カレンダーセレクトフォーム -->
-      <!-- <DialogSection icon="mdi-calendar">
-        <CalendarSelectForm :value="calendar" @input="changeCalendar($event)" />
-      </DialogSection> -->
-
       <DialogSection icon="mdi-account-group">
-          <GuestSelectForm v-model="user" />
+        <GuestSelectForm
+          v-model="selectedParticipants"
+          :value="selectedParticipants"
+          @input="selectedParticipants = $event"
+          @duplicate="handleDuplicateParticipant"
+        />
       </DialogSection>
 
-      <!-- 設備の選択機能 -->
       <DialogSection icon="mdi-office-building-outline">
-        <FacillitiesForm v-model="user" />
+        <FacillitiesForm v-model="selectedParticipants" />
       </DialogSection>
 
     </v-card-text>
@@ -67,6 +66,23 @@
       <v-btn @click="cancel" style="font-size: 14px;">キャンセル</v-btn>
       <v-btn :disabled="isInvalid" @click="submit" style="font-size: 14px;">保存</v-btn>
     </v-card-actions>
+
+    <!-- アラートダイアログ -->
+    <v-dialog v-model="showAlert" max-width="500px">
+      <v-card>
+        <v-card-title class="red--text">
+        <span class="headline">予定の重複</span>
+        </v-card-title>
+        <v-card-text>
+          <p>{{ duplicateParticipantName }}は予定が重複します。登録しますか？</p>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="confirmDuplicateEvent">はい</v-btn>
+          <v-btn color="primary" text @click="cancelDuplicateEvent">いいえ</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-card>
 </template>
 
@@ -74,18 +90,15 @@
 import { mapGetters, mapActions } from 'vuex';
 import { validationMixin } from 'vuelidate';
 import { required } from 'vuelidate/lib/validators';
-
 import DialogSection from '../layouts/DialogSection';
 import DateForm from '../forms/DateForm';
 import TimeForm from '../forms/TimeForm';
 import TextForm from '../forms/TextForm';
 import ColorForm from '../forms/ColorForm';
 import AlldayCheck from '../forms/AlldayCheck';
-// import CalendarSelectForm from '../forms/CalendarSelectForm';
 import GuestSelectForm from '../forms/GuestSelectForm';
 import FacillitiesForm from '../forms/FacillitiesForm';
 import { isGreaterEndThanStart } from '../../functions/datetime';
-
 
 export default {
   name: 'EventFormDialog',
@@ -97,28 +110,26 @@ export default {
     TextForm,
     ColorForm,
     AlldayCheck,
-    // CalendarSelectForm,
     GuestSelectForm,
     FacillitiesForm,
   },
   data: () => ({
     name: '',
-    startDate: new Date(), // set default value to current date
+    startDate: new Date(),
     startTime: null,
-    endDate: new Date(), // set default value to current date
+    endDate: new Date(),
     endTime: null,
     description: '',
     color: '',
     allDay: false,
-    // calendar: null,
-    user: [], // 空の配列として初期化する
-    facillities: [], // 空の配列として初期化する
+    selectedParticipants: [],
+    showAlert: false,
+    duplicateParticipantName: '',
   }),
   validations: {
     name: { required },
     startDate: { required },
-    endDate: { required }
-    // calendar: { required },
+    endDate: { required },
   },
   computed: {
     ...mapGetters('events', ['event']),
@@ -134,10 +145,9 @@ export default {
       );
     },
     isInvalid() {
-      return this.$v.$invalid || this.isInvaledDatetime;
-    }
+      return this.$v.$invalid || this.isInvalidDatetime;
+    },
   },
-
   created() {
     if (this.event !== null && this.event !== undefined) {
       this.name = this.event.name || '';
@@ -149,9 +159,9 @@ export default {
       this.color = this.event.color || '';
       this.allDay = this.event.timed ? false : true;
       if (this.event.id && this.event.user) {
-        const userIds = this.event.user.map(user => user.id);
+        const userIds = this.event.user.map((user) => user.id);
         this.fetchUsers().then(() => {
-          this.user = this.users.filter(user =>
+          this.selectedParticipants = this.users.filter((user) =>
             userIds.includes(user.id)
           );
         });
@@ -160,13 +170,12 @@ export default {
       }
     }
   },
-
   methods: {
     ...mapActions('events', [
       'setEvent',
       'setEditMode',
       'createEvent',
-      'updateEvent'
+      'updateEvent',
     ]),
     ...mapActions('users', [
       'setUsers',
@@ -178,11 +187,48 @@ export default {
       this.setEvent(null);
       this.setEditMode(false);
     },
-
     submit() {
       if (this.isInvalid) {
+        this.showAlert = true; // バリデーションエラー時にアラートを表示する
         return;
-      };
+      }
+
+      const duplicateParticipants = this.checkDuplicateParticipants();
+      if (duplicateParticipants.length > 0) {
+        this.showAlert = true; // 重複イベントがある場合にアラートを表示する
+        return;
+      }
+
+      this.saveEvent();
+    },
+    cancel() {
+      this.setEditMode(false);
+      if (!this.event.id) {
+        this.setEvent(null);
+      }
+    },
+    handleDuplicateParticipant(participantName) {
+      this.duplicateParticipantName = participantName;
+      this.showAlert = true; // 重複イベントアラートを表示する
+    },
+    confirmDuplicateEvent() {
+      // 重複している場合の処理を記述する（登録するなど）
+      console.log('登録しました');
+      this.showAlert = false; // アラートを非表示にする
+      this.saveEvent();
+    },
+    cancelDuplicateEvent() {
+      // 重複している場合の処理を記述する（キャンセルするなど）
+      console.log('キャンセルしました');
+      this.showAlert = false; // アラートを非表示にする
+    },
+    checkDuplicateParticipants() {
+      const participantNames = this.selectedParticipants.map((participant) => participant.name);
+      const uniqueNames = new Set(participantNames);
+      const duplicateNames = participantNames.filter((name) => participantNames.indexOf(name) !== participantNames.lastIndexOf(name));
+      return Array.from(new Set(duplicateNames));
+    },
+    saveEvent() {
       const eventParams = {
         ...this.event,
         name: this.name,
@@ -191,10 +237,11 @@ export default {
         description: this.description,
         color: this.color,
         timed: !this.allDay,
-        participant: this.user,
-        user: this.user.name,
+        participant: this.selectedParticipants,
+        user: this.selectedParticipants.name,
       };
-      if (this.event.id) { 
+
+      if (this.event.id) {
         this.updateEvent(eventParams)
           .then(() => {
             this.closeDialog();
@@ -202,8 +249,7 @@ export default {
           .catch((error) => {
             console.error(error);
           });
-      }
-      else {
+      } else {
         this.createEvent(eventParams)
           .then(() => {
             this.closeDialog();
@@ -213,17 +259,6 @@ export default {
           });
       }
     },
-    cancel() {
-      this.setEditMode(false);
-      if (!this.event.id) {
-        this.setEvent(null);
-      }
-    },
-    // changeCalendar(calendar) {
-    //   this.color = calendar.color;
-    //   this.calendar = calendar;
-    // },
-  }
-
+  },
 };
 </script>

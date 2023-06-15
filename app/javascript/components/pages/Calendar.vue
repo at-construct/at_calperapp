@@ -50,14 +50,15 @@
       </v-navigation-drawer>
 
       <!-- ホームカレンダー -->
+      <!-- :events="events.concat(participantEvents)" 削除した-->
       <v-sheet height="80vh" class="flex">
         <v-calendar
           ref="calendar"
           v-model="value"
-          :events="events.concat(participantEvents)"
+          :events="events"
           :type="type"
           @change="handleChange"
-          color="gray"
+          color="info"
           locale="ja-jp"
           :day-format="timestamp => new Date(timestamp.date).getDate()"
           :month-format="timestamp => new Date(timestamp.date).getMonth() + 1 + ' /'"
@@ -68,7 +69,6 @@
         ></v-calendar>
       </v-sheet>
     </v-sheet>
-
     <!-- カレンダー直下にプラスボタン-->
     <v-sheet max-height="8vh">
       <v-toolbar flat>
@@ -79,7 +79,7 @@
             hide-overlay
             transition="dialog-bottom-transition"
           >
-            <template v-slot:activator="{ on, attrs }">
+            <template v-slot:activator="{ on, ...attrs }">
               <v-btn
                 fab
                 v-bind="attrs"
@@ -96,19 +96,6 @@
         </v-row>
       </v-toolbar>
     </v-sheet>
-
-  <!-- participantボタンのテスト -->
-  <!-- <v-sheet>
-    <div>
-      <ul>
-        <li v-for="participant in participants" :key="participant.id">
-          {{ participant.event.name }}
-        </li>
-      </ul>
-      <button type="submit" @click="fetchParticipants()">fetchParticipants</button>
-      <TestParticipantDetails/>
-    </div>
-  </v-sheet> -->
 
     <!-- イベント作成ダイアログ -->
     <v-row justify="center">
@@ -132,6 +119,26 @@
         <DayEventList />
       </v-dialog>
     </v-row>
+
+    <!-- 通知ダイアログ -->
+    <v-dialog
+      v-model="dialog"
+      max-width="400"
+    >
+      <template v-slot:activator="{ on }">
+        <v-btn
+          icon
+          v-on="on"
+          @click="showNotificationDialog"
+        >
+        </v-btn>
+      </template>
+      <v-card>
+        <v-card-text>
+          <span>Aさんの予定に参加者として招待されました</span>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -143,7 +150,6 @@ import EventFormDialog from '../events/EventFormDialog';
 import DayEventList from '../events/DayEventList';
 import CalendarList from '../calendars/CalendarList';
 import { getDefaultStartAndEnd } from '../../functions/datetime';
-import TestParticipantDetails from './TestParticipantDetails.vue'; // axiosをインポートテスト用消す
 
 export default {
   name: 'Calendar',
@@ -152,7 +158,6 @@ export default {
     EventFormDialog,
     DayEventList,
     CalendarList,
-    TestParticipantDetails, // axiosをインポートテスト用消す
   },
   data: () => ({
     value: format(new Date(), 'yyyy/MM/dd'),
@@ -209,7 +214,7 @@ export default {
     },
 
     initEvent({ date }) {
-      if (this.clickedDate !== null || !date) { // dateがnullの場合にもチェックする
+      if (this.clickedDate !== null || !date) {
         return;
       }
       date = date.replace(/-/g, '/');
@@ -251,7 +256,7 @@ export default {
           el.children[0].classList.add('sunday');
           el.children[6].classList.add('saturday');
         });
-      },);
+      });
     },
   }
 };

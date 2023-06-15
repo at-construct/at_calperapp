@@ -33,25 +33,18 @@
     </v-row>
   </v-container>
 </template>
+
 <script>
 import { mapActions, mapGetters } from 'vuex';
 
 export default {
   name: 'GuestSelectForm',
   props: ['value'],
-  data() {
-    return {
-      selectedUser: null,
-    };
-  },
   computed: {
     ...mapGetters('users', ['users']),
     filteredUsers() {
       return this.users.filter(user => user.name !== '6F会議室(ソファー)' && user.name !== 'ハイエース' && user.name !== '9Fスタジオ');
     },
-  },
-  created() {
-    console.log(this.value);
   },
   methods: {
     onSelectionChange(value) {
