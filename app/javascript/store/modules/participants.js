@@ -8,19 +8,19 @@ const state = {
   participantUsers: [],
   isEditModeParticipantUser: false,
   editModeParticipantUser: null,
-  selectedParticipants: [],
+  selectedParticipants: [], // 参加者の選択状態を保持する配列
 };
 
 const getters = {
   participantEvents: (state) =>
-  state.participantEvents.map((participantEvent) => {
-    return {
-      ...participantEvent,
-      start: new Date(participantEvent.start),
-      end: new Date(participantEvent.end),
-    };
-  }),
-  participantAllEvents: (state) => 
+    state.participantEvents.map((participantEvent) => {
+      return {
+        ...participantEvent,
+        start: new Date(participantEvent.start),
+        end: new Date(participantEvent.end),
+      };
+    }),
+  participantAllEvents: (state) =>
     state.participantAllEvents.map((participantAllEvent) => {
       return {
         ...participantAllEvent,
@@ -28,8 +28,8 @@ const getters = {
         end: new Date(participantAllEvent.end),
       };
     }),
-  participantUsers: state => state.participantUsers,
-  isEditModeParticipantUser: state => state.isEditModeParticipantUser,
+  participantUsers: (state) => state.participantUsers,
+  isEditModeParticipantUser: (state) => state.isEditModeParticipantUser,
   selectedParticipants: (state) => state.selectedParticipants,
 };
 
@@ -62,14 +62,15 @@ const mutations = {
     (state.participantUsers = state.participantUsers.filter(
       (user) => user.id !== participantUser.id
     )),
-  setEditModeParticipantUser: (state, bool) => (state.isEditModeParticipantUser = bool),
+  setEditModeParticipantUser: (state, bool) =>
+    (state.isEditModeParticipantUser = bool),
   setSelectedParticipants(state, participants) {
     state.selectedParticipants = participants;
   },
 };
 
 const actions = {
-  async fetchParticipantAllEvents({ commit }) { 
+  async fetchParticipantAllEvents({ commit }) {
     const response = await axios.get(`${apiUrl}/participants/all`);
     commit('setParticipantAllEvents', response.data);
   },
@@ -78,9 +79,9 @@ const actions = {
     commit('setParticipantEvents', response.data);
   },
   async fetchParticipnatUserEvents({ commit }, userId) {
-    console.log("User ID: ", userId); 
-      const response = await axios.get(`${apiUrl}/participants/${userId}`);
-      commit('setEvents', response.data);
+    console.log('User ID: ', userId);
+    const response = await axios.get(`${apiUrl}/participants/${userId}`);
+    commit('setEvents', response.data);
   },
   async createParticipantEvent({ commit }, participantEvent) {
     console.log('createParticipantEvent', participantEvent);
@@ -105,12 +106,17 @@ const actions = {
   },
 
   async fetchParticipantUsers({ commit }) {
-    const response = await axios.get(`${apiUrl}/participants/events_with_participants`);
+    const response = await axios.get(
+      `${apiUrl}/participants/events_with_participants`
+    );
     commit('setParticipantUsers', response.data);
   },
   async createParticipantUser({ commit }, participantUser) {
     console.log('createParticipantUser', participantUser);
-    const response = await axios.post(`${apiUrl}/participants/events_with_participants`, participantUser);
+    const response = await axios.post(
+      `${apiUrl}/participants/events_with_participants`,
+      participantUser
+    );
     commit('appendParticipantUser', response.data);
   },
   async updateParticipantUser({ dispatch, commit }, participantUser) {
@@ -122,11 +128,13 @@ const actions = {
     dispatch('fetchParticipantUsers');
   },
   async deleteParticipantUser({ dispatch, commit }, participantUserId) {
-    await axios.delete(`${apiUrl}/participants/events_with_participants/${participantUserId}`);
+    await axios.delete(
+      `${apiUrl}/participants/events_with_participants/${participantUserId}`
+    );
     commit('removeParticipantUser', participantUserId);
     dispatch('fetchParticipantUsers');
   },
-  setParticipantUsers({ commit }, participantUsers) { // セッターを追加
+  setParticipantUsers({ commit }, participantUsers) {
     commit('setParticipantUsers', participantUsers);
   },
   setEditModeParticipantUser({ commit }, bool) {
@@ -135,6 +143,9 @@ const actions = {
   setSelectedParticipants({ commit }, participants) {
     commit('setSelectedParticipants', participants);
   },
+  updateSelectedParticipants({ commit }, selectedParticipants) {
+    commit('setSelectedParticipants', selectedParticipants);
+  },
 };
 
 export default {
@@ -142,5 +153,5 @@ export default {
   state,
   getters,
   mutations,
-  actions
+  actions,
 };
