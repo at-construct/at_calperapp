@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   resources :events, only: [:index, :show, :create, :update, :destroy] do
     collection do
       get 'all' # /events/all
+      get 'index_with_participants' # /events/index_with_participants 
     end
   end
   resources :calendars, only: [:index, :show, :create, :update, :destroy]

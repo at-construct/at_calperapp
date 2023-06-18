@@ -43,7 +43,7 @@ export default {
   computed: {
     ...mapGetters('users', ['users']),
     filteredUsers() {
-      return this.users.filter(user => user.name !== '6F会議室(ソファー)' && user.name !== 'ハイエース' && user.name !== '9Fスタジオ');
+      return this.users.filter(user => user.name !== '会議室A' && user.name !== 'ホールA' && user.name !== 'ハイエース');
     },
   },
   methods: {

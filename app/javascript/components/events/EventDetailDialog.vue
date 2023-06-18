@@ -94,7 +94,7 @@ export default {
       participantUsers.forEach(participantEvent => {
         if (participantEvent.id === event.id) {
           participantEvent.participants.forEach(participant => {
-            if (!uniqueParticipants.includes(participant) && participant !== "7Fテーブル" && participant !== "6F会議室(ソファー)" && participant !== "9Fスタジオ" && participant !== "ハイエース") {
+            if (!uniqueParticipants.includes(participant) && participant !== "会議室A" && participant !== "ホールA" && participant !== "ハイエース") {
               uniqueParticipants.push(participant);
             }
           });
@@ -107,7 +107,7 @@ export default {
       participantUsers.forEach(participantEvent => {
         if (participantEvent.id === event.id) {
           participantEvent.participants.forEach(participant => {
-            if (!uniqueFacilities.includes(participant) && (participant === "7Fテーブル" || participant === "6F会議室(ソファー)" || participant === "9Fスタジオ" || participant === "ハイエース")) {
+            if (!uniqueFacilities.includes(participant) && (participant === "会議室A" || participant === "ホールA" || participant === "ハイエース")) {
               uniqueFacilities.push(participant);
             }
           });
