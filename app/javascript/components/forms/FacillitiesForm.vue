@@ -37,13 +37,13 @@ export default {
   computed: {
     ...mapGetters('users', ['users']),
     filteredUsers() {
-      const allowedUserNames = ['6F会議室(ソファー)', '7Fテーブル', 'ハイエース', '9Fスタジオ']; // 選択可能なユーザーの名前
+      const allowedUserNames = ['会議室A', 'ホールA', 'ハイエース']; // 選択可能なユーザーの名前
       return this.users.filter(user => allowedUserNames.includes(user.name));
     },
   },
   methods: {
     filterUsers(item, queryText, itemText) {
-      const allowedUserNames = ['6F会議室(ソファー)', '7Fテーブル', 'ハイエース', '9Fスタジオ'];
+      const allowedUserNames = ['会議室A', 'ホールA', 'ハイエース'];
       return itemText.toLowerCase().indexOf(queryText.toLowerCase()) > -1 && allowedUserNames.includes(itemText);
     },
   },
