@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+  <% if user_signed_in? %>
+    <%# ユーザーがログインしている場合 %>
+    <div class="text-center">
+      <!-- 非表示をトグルするための要素 -->
+      <div class="user-toggle">
+        <h4 class="user-name">
+          <%= link_to current_user.name + "のアカウント", destroy_user_session_path, method: :delete, data: {confirm: "ログアウトはOKをクリック"}%>
+        </h4>
+      </div>
+    </div>
+  <% else %>
+    <%# ユーザーがログインしていない場合 %>
+    <h5 style="text-align:center"><b>現在ログインしていません</b></h5>
+    <div class="text-center">
+      <%= link_to "ログイン", new_user_session_path, class: 'post' %>
+      <%= link_to "新規登録", new_user_registration_path, class: 'post' %>
+    </div>
+  <% end %>
+
+  <%= yield %>
+  <%= javascript_pack_tag 'main_vue'%>
+  <%= stylesheet_pack_tag 'main_vue'%>
+  <%= stylesheet_link_tag 'application' %>
+
+<script>
+    // 名前の非表示と表示を切り替える
+    document.addEventListener('DOMContentLoaded', function() {
+      var toggle = document.querySelector('.user-toggle');
+      toggle.addEventListener('click', function() {
+        this.classList.toggle('active');
+        setTimeout(() => {
+          this.classList.remove('active');
+        }, 20000); // 20秒後に自動的に非表示にする
+      });
+    });
+</script> 
+</body>
+</html>
+
+<style>
+/* 名前を非表示にする */
+.user-name {
+  display: none;
+  float: left;
+  font-size: 15px;
+}
+
+/* 非表示をトグルするためのスタイル */
+.user-toggle {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  flex-direction: row-reverse;
+  color: rgb(236, 236, 236);
+}
+
+.user-toggle:after {
+  content: ' ▲';
+  margin-right: 4px;
+}
+
+.user-toggle.active .user-name {
+  display: inline-block;
+}
+
+.user-toggle.active:after {
+  content: ' ▶︎';
+}
+</style>
