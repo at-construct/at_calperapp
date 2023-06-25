@@ -1,0 +1,38 @@
+{
+  "application.js": "/packs/js/application-33f6eb078d2d444e6bc8.js",
+  "application.js.map": "/packs/js/application-33f6eb078d2d444e6bc8.js.map",
+  "entrypoints": {
+    "application": {
+      "js": [
+        "/packs/js/application-33f6eb078d2d444e6bc8.js"
+      ],
+      "js.map": [
+        "/packs/js/application-33f6eb078d2d444e6bc8.js.map"
+      ]
+    },
+    "main_vue": {
+      "js": [
+        "/packs/js/main_vue-02f0a0ace2de58e5d868.js"
+      ],
+      "js.map": [
+        "/packs/js/main_vue-02f0a0ace2de58e5d868.js.map"
+      ]
+    },
+    "plugins/vue-axios": {
+      "js": [
+        "/packs/js/plugins/vue-axios-e29c446d02558f9e6090.js"
+      ],
+      "js.map": [
+        "/packs/js/plugins/vue-axios-e29c446d02558f9e6090.js.map"
+      ]
+    }
+  },
+  "main_vue.js": "/packs/js/main_vue-02f0a0ace2de58e5d868.js",
+  "main_vue.js.map": "/packs/js/main_vue-02f0a0ace2de58e5d868.js.map",
+  "media/fonts/materialdesignicons-webfont.eot?v=6.9.96": "/packs/media/fonts/materialdesignicons-webfont-de316c4d.eot",
+  "media/fonts/materialdesignicons-webfont.ttf?v=6.9.96": "/packs/media/fonts/materialdesignicons-webfont-ac55aef6.ttf",
+  "media/fonts/materialdesignicons-webfont.woff2?v=6.9.96": "/packs/media/fonts/materialdesignicons-webfont-d5cba820.woff2",
+  "media/fonts/materialdesignicons-webfont.woff?v=6.9.96": "/packs/media/fonts/materialdesignicons-webfont-059ea00c.woff",
+  "plugins/vue-axios.js": "/packs/js/plugins/vue-axios-e29c446d02558f9e6090.js",
+  "plugins/vue-axios.js.map": "/packs/js/plugins/vue-axios-e29c446d02558f9e6090.js.map"
+}
