@@ -21,40 +21,67 @@ class EventsController < ApplicationController
   end
 
   def create
-    # イベントデータを作成する
     event = Event.new(event_params)
     event.user_id = current_user.id
     event.user_name = current_user.name
-    if event.save
-      user_ids = params[:participant]
-      if user_ids
-        user_ids.each do |user_id|
-          participant = Participant.new(event_id: event.id, user_id: user_id)
-          participant.save
-        end
-      end
-      render json: event.to_json
-    else
-      render json: event.errors, status: 422
-    end
-  end
-
-  def update
-    # 指定したidのイベントデータを更新する
-    event = Event.find(params[:id])
-    # 中間テーブルから、そのイベントに対する参加者情報を更新する
-    event.participants.destroy_all
-    user_ids = params[:user]
+  
+    user_ids = params[:participant]
+    overlapping_events = []
+  
     if user_ids
       user_ids.each do |user_id|
-        participant = Participant.new(event_id: event.id, user_id: user_id)
-        participant.save
+        user = User.find(user_id)
+        overlapping_events += user.events.where.not(id: event.id).where('start < ? AND "end" > ?', event.end, event.start)
       end
     end
-    if event.update(event_params)
-      render json: event.to_json
+  
+    if overlapping_events.empty?
+      if event.save
+        if user_ids
+          user_ids.each do |user_id|
+            participant = Participant.new(event_id: event.id, user_id: user_id)
+            participant.save
+          end
+        end
+        render json: event.to_json
+      else
+        render json: event.errors, status: 422
+      end
     else
-      render json: event.errors, status: 422
+      render json: { error: 'The event overlaps with another one' }, status: 422
+    end
+  end
+  
+  def update
+    event = Event.find(params[:id])
+    new_event = Event.new(event_params)
+    user_ids = params[:user]
+  
+    overlapping_events = []
+  
+    if user_ids
+      user_ids.each do |user_id|
+        user = User.find(user_id)
+        overlapping_events += user.events.where.not(id: event.id).where('start < ? AND "end" > ?', new_event.end, new_event.start)
+      end
+    end
+  
+    if overlapping_events.empty?
+      event.participants.destroy_all
+      if user_ids
+        user_ids.each do |user_id|
+          Participant.create(event_id: event.id, user_id: user_id)
+        end
+      end
+      if event.update(event_params)
+        puts "Event successfully updated"
+        render json: event.to_json
+      else
+        puts "Failed to update event"
+        render json: event.errors, status: 422
+      end
+    else
+      render json: { error: 'The event overlaps with another one' }, status: 422
     end
   end
 

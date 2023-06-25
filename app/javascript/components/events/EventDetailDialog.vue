@@ -11,7 +11,7 @@
       <v-btn icon @click="closeDialog">
         <v-icon size="20px">mdi-close</v-icon>
       </v-btn>
-      <EventFormDialog v-if="event !== null && isEditMode && isEditModeParticipantUser" :initialParticipants="selectedParticipants" />
+      <EventFormDialog v-if="event !== null && isEditMode" :initial-participants="selectedParticipants" />
     </v-card-actions>
 
     <!-- 予定削除確認ダイアログ -->
@@ -107,7 +107,7 @@ export default {
       participantUsers.forEach(participantEvent => {
         if (participantEvent.id === event.id) {
           participantEvent.participants.forEach(participant => {
-            if (!uniqueFacilities.includes(participant) && (participant === "会議室A" || participant === "ホールA" || participant === "ハイエース")) {
+            if (!uniqueFacilities.includes(participant) && (participant === "会議室A" || participant === "ホールA" ||  participant === "ハイエース")) {
               uniqueFacilities.push(participant);
             }
           });
@@ -117,6 +117,7 @@ export default {
     },
     closeDialog() {
       this.setEvent(null);
+      this.setParticipantUsers([]);
       this.setEditMode(false);
       this.setEditModeParticipantUser(false);
     },

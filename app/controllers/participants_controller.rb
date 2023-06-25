@@ -44,11 +44,24 @@ class ParticipantsController < ApplicationController
     events_json = events.map do |event|
       event.as_json.merge(
         'user_name' => event.user.name,
-        'participants' => event.participants.map { |p| p.user.name }
+        'participants' => event.participants.map { |p| { 'id' => p.user.id, 'name' => p.user.name } }
       )
     end
     render json: events_json
   end
+  
+
+  # def events_with_participants_user_name
+  #   events_with_participantsの原型
+  #   events = Event.includes(participants: :user)
+  #   events_json = events.map do |event|
+  #     event.as_json.merge(
+  #       'user_name' => event.user.name,
+  #       'participants' => event.participants.map { |p| p.user.name }
+  #     )
+  #   end
+  #   render json: events_json
+  # end
 
   # def user_excerpt
   #   #カレントユーザー以外の全てのユーザーを返す

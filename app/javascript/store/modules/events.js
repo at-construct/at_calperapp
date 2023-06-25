@@ -65,7 +65,9 @@ const actions = {
   async updateEvent({ commit }, event) {
     const response = await axios.put(`${apiUrl}/events/${event.id}`, event);
     commit('updateEvent', response.data);
+    console.log('Event updated:', response.data); // 追加
   },
+  
   setEvent({ commit }, event) {
     commit('setEvent', event);
   },

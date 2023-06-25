@@ -17,7 +17,7 @@
 
 <script>
 export default {
-  name: 'TimeForm',
+  name: 'TextForm',
   props: ['value']
 };
 </script>

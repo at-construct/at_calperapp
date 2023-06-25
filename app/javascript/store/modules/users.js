@@ -24,21 +24,21 @@ const mutations = {
 
 const actions = {
   async fetchUsers({ commit }) {
-    const response = await axios.get(`${apiUrl}/users/excerpt`);
+    const response = await axios.get(`${apiUrl}/users`);
     commit('setUsers', response.data);
   },
   async addUser({ commit }, user) {
     console.log('addUser', user);
-    const response = await axios.post(`${apiUrl}/users/excerpt`, user);
+    const response = await axios.post(`${apiUrl}/users`, user);
     commit('appendUser', response.data);
   },
   async updateUser({ dispatch, commit }, user) {
-    const response = await axios.put(`${apiUrl}/users/excerpt/${user.id}`, user);
+    const response = await axios.put(`${apiUrl}/users/${user.id}`, user);
     commit('updateUser', response.data);
     dispatch('users/fetchUsers', null, { root: true });
   },
   async deleteUser({ dispatch, commit }, id) {
-    const response = await axios.delete(`${apiUrl}/users/excerpt/${id}`);
+    const response = await axios.delete(`${apiUrl}/users/${id}`);
     commit('removeUser', response.data);
     dispatch('users/fetchUsers', null, { root: true });
   },

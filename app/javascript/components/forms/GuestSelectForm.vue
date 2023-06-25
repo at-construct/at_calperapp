@@ -3,21 +3,22 @@
     <v-row align="center">
       <v-col cols="12" md="6">
         <v-autocomplete
+          v-model="selectedParticipants"
+          ref="autocomplete"
           small-chips
-          clearable
           color="grey"
           label="参加者を追加"
           item-text="name"
           item-value="id"
           multiple
-          :value="value"
+          :value="selectedParticipants"
           :items="filteredUsers"
-          @input="$emit('input', $event)"
+          @input="updateSelectedValue"
           @change="onSelectionChange"
         >
           <template v-slot:selection="{ item, index }">
             <v-chip
-              v-if="index < value.length"
+              v-if="index < selectedParticipants.length"
               :key="item.id"
               close
               @click:close="removeParticipant(index)"
@@ -35,11 +36,16 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapGetters, mapMutations } from 'vuex';
 
 export default {
   name: 'GuestSelectForm',
   props: ['value'],
+  data() {
+    return {
+      selectedParticipants: [],
+    };
+  },
   computed: {
     ...mapGetters('users', ['users']),
     filteredUsers() {
@@ -47,14 +53,26 @@ export default {
     },
   },
   methods: {
+    ...mapMutations('participants', ['setSelectedParticipants']),
+    updateSelectedValue(value) {
+      this.selectedParticipants = value;
+      this.setSelectedParticipants(value); // Vuex stateを更新
+    },
     onSelectionChange(value) {
       this.$emit('input', value);
+      this.$refs.autocomplete.blur();
     },
     removeParticipant(index) {
-      const newValue = [...this.value];
+      const newValue = [...this.selectedParticipants];
       newValue.splice(index, 1);
-      this.$emit('input', newValue);
+      this.selectedParticipants = newValue;
+      this.setSelectedParticipants(newValue); // Vuex stateを更新
     },
+  },
+  mounted() {
+    if (this.$store.state.participants.selectedParticipants.length > 0) {
+      this.selectedParticipants = [...this.$store.state.participants.selectedParticipants];
+    }
   },
 };
 </script>

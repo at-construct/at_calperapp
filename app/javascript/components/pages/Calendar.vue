@@ -135,7 +135,13 @@
       </template>
       <v-card>
         <v-card-text>
-          <span>Aさんの予定に参加者として招待されました</span>
+          <br>
+          <span>Aの予定 6月20日13::00〜6月20日14::00 に参加者として追加されました</span>
+          <br>
+          <hr>
+          <br>
+          <span>Cの参加者として追加された予定 6月23日13::00〜6月23日14::00 は削除されました</span>
+          <br>
         </v-card-text>
       </v-card>
     </v-dialog>

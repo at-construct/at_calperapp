@@ -50,14 +50,12 @@
       <DialogSection icon="mdi-account-group">
         <GuestSelectForm
           v-model="selectedParticipants"
-          :value="selectedParticipants"
-          @input="selectedParticipants = $event"
           @duplicate="handleDuplicateParticipant"
         />
       </DialogSection>
 
       <DialogSection icon="mdi-office-building-outline">
-        <FacillitiesForm v-model="selectedParticipants" />
+        <FacillitiesForm v-model="selectedFacilities" />
       </DialogSection>
 
     </v-card-text>
@@ -71,7 +69,7 @@
     <v-dialog v-model="showAlert" max-width="500px">
       <v-card>
         <v-card-title class="red--text">
-        <span class="headline">予定の重複</span>
+          <span class="headline">予定の重複</span>
         </v-card-title>
         <v-card-text>
           <p>{{ duplicateParticipantName }}は予定が重複します。登録しますか？</p>
@@ -122,9 +120,10 @@ export default {
     description: '',
     color: '',
     allDay: false,
-    selectedParticipants: [],
     showAlert: false,
     duplicateParticipantName: '',
+    selectedParticipants: [], 
+    selectedFacilities: [], 
   }),
   validations: {
     name: { required },
@@ -147,9 +146,17 @@ export default {
     isInvalid() {
       return this.$v.$invalid || this.isInvalidDatetime;
     },
+    facilities: {
+      get() {
+        return this.selectedFacilities;
+      },
+      set(value) {
+        this.selectedFacilities = value;
+      },
+    },
   },
   created() {
-    if (this.event !== null && this.event !== undefined) {
+    if (this.event && Object.keys(this.event).length > 0) { 
       this.name = this.event.name || '';
       this.startDate = this.event.startDate || '';
       this.startTime = this.event.startTime || '';
@@ -158,18 +165,11 @@ export default {
       this.description = this.event.description || '';
       this.color = this.event.color || '';
       this.allDay = this.event.timed ? false : true;
-      if (this.event.id && this.event.user) {
-        const userIds = this.event.user.map((user) => user.id);
-        this.fetchUsers().then(() => {
-          this.selectedParticipants = this.users.filter((user) =>
-            userIds.includes(user.id)
-          );
-        });
-      } else {
-        this.fetchUsers();
-      }
+      this.fetchUsers();
+      this.selectedParticipants = this.event.participant || [];
     }
   },
+
   methods: {
     ...mapActions('events', [
       'setEvent',
@@ -179,13 +179,20 @@ export default {
     ]),
     ...mapActions('users', [
       'setUsers',
-      'setEditModeUser',
       'createUser',
       'fetchUsers',
+    ]),
+    ...mapActions('participants', [
+      'setParticipantUsers',
+      'setEditModeParticipantUser',
+      'setSelectedParticipants',
     ]),
     closeDialog() {
       this.setEvent(null);
       this.setEditMode(false);
+      this.setParticipantUsers([]); // 参加者を空にする
+      this.setEditModeParticipantUser(false); // isEditModeParticipantUserをfalseに設定する
+      this.setSelectedParticipants([]); // 選択された参加者を空にする
     },
     submit() {
       if (this.isInvalid) {
@@ -195,7 +202,7 @@ export default {
 
       const duplicateParticipants = this.checkDuplicateParticipants();
       if (duplicateParticipants.length > 0) {
-        this.showAlert = true; // 重複イベントがある場合にアラートを表示する
+        this.handleDuplicateParticipant(duplicateParticipants[0]); // 重複する参加者が存在する場合、その名前をhandleDuplicateParticipantに渡す
         return;
       }
 
@@ -203,8 +210,10 @@ export default {
     },
     cancel() {
       this.setEditMode(false);
+      this.setEditModeParticipantUser(false); // isEditModeParticipantUserをfalseに設定する
       if (!this.event.id) {
         this.setEvent(null);
+        this.setParticipantUsers([]); // 参加者を空にする
       }
     },
     handleDuplicateParticipant(participantName) {
@@ -213,13 +222,13 @@ export default {
     },
     confirmDuplicateEvent() {
       // 重複している場合の処理を記述する（登録するなど）
-      console.log('登録しました');
+      // console.log('登録しました');
       this.showAlert = false; // アラートを非表示にする
       this.saveEvent();
     },
     cancelDuplicateEvent() {
       // 重複している場合の処理を記述する（キャンセルするなど）
-      console.log('キャンセルしました');
+      // console.log('キャンセルしました');
       this.showAlert = false; // アラートを非表示にする
     },
     checkDuplicateParticipants() {
@@ -230,7 +239,7 @@ export default {
     },
     saveEvent() {
       const eventParams = {
-        ...this.event,
+        id: this.event.id || null,
         name: this.name,
         start: `${this.startDate || ''} ${this.startTime || ''}`,
         end: `${this.endDate || ''} ${this.endTime || ''}`,
@@ -238,10 +247,10 @@ export default {
         color: this.color,
         timed: !this.allDay,
         participant: this.selectedParticipants,
-        user: this.selectedParticipants.name,
+        user: this.selectedParticipants,
       };
 
-      if (this.event.id) {
+      if (this.event && this.event.id) {  
         this.updateEvent(eventParams)
           .then(() => {
             this.closeDialog();
