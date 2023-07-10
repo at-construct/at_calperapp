@@ -3,17 +3,17 @@
     <v-row align="center">
       <v-col cols="12" md="6">
         <v-autocomplete
+          v-model="selectedParticipants"
           ref="autocomplete"
           small-chips
           color="grey"
-          label="設備を選択"
+          label="参加者を追加"
           item-text="name"
           item-value="id"
-          v-model="selectedParticipants"
+          multiple
+          :value="selectedParticipants"
           :items="filteredUsers"
           @input="updateSelectedValue"
-          :filter="(item, queryText, itemText) => filterUsers(item, queryText, itemText)"
-          multiple
           @change="onSelectionChange"
         >
           <template v-slot:selection="{ item, index }">
@@ -21,10 +21,9 @@
               v-if="index < selectedParticipants.length"
               :key="item.id"
               close
-              @click:close="removeFacilities(index)"
+              @click:close="removeParticipant(index)"
             >
               {{ item.name }}
-              <v-icon small>mdi-close</v-icon>
             </v-chip>
           </template>
           <template v-slot:item="{ item }">
@@ -40,7 +39,7 @@
 import { mapGetters, mapMutations } from 'vuex';
 
 export default {
-  name: 'FacilitiesForm',
+  name: 'GuestSelectForm',
   props: ['value'],
   data() {
     return {
@@ -50,29 +49,28 @@ export default {
   computed: {
     ...mapGetters('users', ['users']),
     filteredUsers() {
-      const allowedUserNames = ['会議室A', 'ホールA', 'ハイエース'];
-      return this.users.filter(user => allowedUserNames.includes(user.name));
+      return this.users.filter(user => user.name === '会議室A' || user.name === 'ホールA' || user.name === 'ハイエース');
     },
   },
   methods: {
     ...mapMutations('participants', ['setSelectedParticipants']),
-    filterUsers(item, queryText, itemText) {
-      const allowedUserNames = ['会議室A', 'ホールA', 'ハイエース'];
-      return itemText.toLowerCase().indexOf(queryText.toLowerCase()) > -1 && allowedUserNames.includes(itemText);
-    },
     updateSelectedValue(value) {
-      this.selectedParticipants = value;
-      this.setSelectedParticipants(value); // Vuex stateを更新
+      this.setSelectedParticipants(value);
+      this.$emit('input', value); // 参加者情報を親コンポーネントに送信
     },
     onSelectionChange(value) {
-      this.$emit('input', value);
+      this.setSelectedParticipants(value);
+      this.$emit('input', value); // 参加者情報を親コンポーネントに送信
       this.$refs.autocomplete.blur();
     },
-    removeFacilities(index) {
+    removeParticipant(index) {
+
+      
       const newValue = [...this.selectedParticipants];
       newValue.splice(index, 1);
       this.selectedParticipants = newValue;
-      this.setSelectedParticipants(newValue); // Vuex stateを更新
+      this.setSelectedParticipants(newValue);
+      this.$emit('input', newValue); // 参加者情報を親コンポーネントに送信
     },
   },
   mounted() {

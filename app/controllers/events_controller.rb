@@ -53,26 +53,26 @@ class EventsController < ApplicationController
   end
   
   def update
+    puts "Update action started"
     event = Event.find(params[:id])
-    new_event = Event.new(event_params)
-    user_ids = params[:user]
-  
+    user_ids = params[:user] || []
     overlapping_events = []
-  
-    if user_ids
-      user_ids.each do |user_id|
-        user = User.find(user_id)
-        overlapping_events += user.events.where.not(id: event.id).where('start < ? AND "end" > ?', new_event.end, new_event.start)
-      end
+    
+    user_ids.each do |user_id|
+      user = User.find(user_id)
+      overlapping_events += user.events.where.not(id: event.id).where('start < ? AND "end" > ?', event_params[:end], event_params[:start])
     end
-  
+    
+    # 以下の処理も event 変数を使用する
     if overlapping_events.empty?
-      event.participants.destroy_all
-      if user_ids
-        user_ids.each do |user_id|
-          Participant.create(event_id: event.id, user_id: user_id)
-        end
+      current_user_ids = event.participants.map(&:user_id)
+      added_user_ids = user_ids - current_user_ids
+      removed_user_ids = current_user_ids - user_ids
+    
+      added_user_ids.each do |user_id|
+        Participant.create(event_id: event.id, user_id: user_id)
       end
+    
       if event.update(event_params)
         puts "Event successfully updated"
         render json: event.to_json
@@ -84,7 +84,7 @@ class EventsController < ApplicationController
       render json: { error: 'The event overlaps with another one' }, status: 422
     end
   end
-
+      
   def destroy
     # 指定したidのイベントデータを削除する
     event = Event.find(params[:id])
@@ -102,9 +102,10 @@ class EventsController < ApplicationController
   # 改修してdevise_token_authを使おう(セキュリティ上) 一旦はこれを使う
   skip_before_action :verify_authenticity_token
 
-  private
+private
 
-  def event_params
-    params.require(:event).permit(:name, :start, :end, :timed, :description, :color, :visibility, :user_name)
-  end
+def event_params
+  params.require(:event).permit(:id, :name, :start, :end, :timed, :description, :color, :visibility, user: [:id, :name])
+end
+
 end
