@@ -49,13 +49,13 @@
 
       <DialogSection icon="mdi-account-group">
         <GuestSelectForm
-          v-model="selectedParticipants"
+          v-model="guestSelectFormData"
           @duplicate="handleDuplicateParticipant"
         />
       </DialogSection>
 
       <DialogSection icon="mdi-office-building-outline">
-        <FacillitiesForm v-model="selectedFacilities" />
+        <FacillitiesForm v-model="facilitiesFormData" />
       </DialogSection>
 
     </v-card-text>
@@ -122,9 +122,17 @@ export default {
     allDay: false,
     showAlert: false,
     duplicateParticipantName: '',
-    selectedParticipants: [], 
-    selectedFacilities: [], 
+    guestSelectFormData: [],
+    facilitiesFormData: [],
   }),
+  watch: {
+    guestSelectFormData(newVal) {
+      this.guestSelectFormData = newVal;
+    },
+    facilitiesFormData(newVal) {
+      this.facilitiesFormData = newVal;
+    },
+  },
   validations: {
     name: { required },
     startDate: { required },
@@ -146,13 +154,8 @@ export default {
     isInvalid() {
       return this.$v.$invalid || this.isInvalidDatetime;
     },
-    facilities: {
-      get() {
-        return this.selectedFacilities;
-      },
-      set(value) {
-        this.selectedFacilities = value;
-      },
+    selectedParticipants() {
+      return [...this.guestSelectFormData, ...this.facilitiesFormData];
     },
   },
   created() {
@@ -166,7 +169,9 @@ export default {
       this.color = this.event.color || '';
       this.allDay = this.event.timed ? false : true;
       this.fetchUsers();
-      this.selectedParticipants = this.event.participant || [];
+      const participants = this.event.participant || [];
+      this.guestSelectFormData = participants.filter(participant => participant.type === 'guest');
+      this.facilitiesFormData = participants.filter(participant => participant.type === 'facility');
     }
   },
 
@@ -199,20 +204,54 @@ export default {
         this.showAlert = true; // バリデーションエラー時にアラートを表示する
         return;
       }
-
+    
       const duplicateParticipants = this.checkDuplicateParticipants();
       if (duplicateParticipants.length > 0) {
         this.handleDuplicateParticipant(duplicateParticipants[0]); // 重複する参加者が存在する場合、その名前をhandleDuplicateParticipantに渡す
         return;
       }
-
-      this.saveEvent();
+    
+      // GuestSelectFormコンポーネントに変更を反映する
+      this.guestSelectFormData = [...this.guestSelectFormData];
+      this.facilitiesFormData = [...this.facilitiesFormData];
+    
+      const eventParams = {
+          id: this.event.id || null,
+          name: this.name,
+          start: `${this.startDate || ''} ${this.startTime || ''}`,
+          end: `${this.endDate || ''} ${this.endTime || ''}`,
+          description: this.description,
+          color: this.color,
+          timed: !this.allDay,
+          participant: this.selectedParticipants,
+          user: this.selectedParticipants,
+        };
+      
+        if (this.event && this.event.id) {
+        this.updateEvent(eventParams)
+          .then(() => {
+            this.closeDialog();
+          })
+          .catch((error) => {
+            // エラーハンドリング
+          });
+        } else {
+        this.createEvent(eventParams)
+          .then(() => {
+            this.closeDialog();
+          })
+          .catch((error) => {
+            // エラーハンドリング
+          });
+        }
     },
     cancel() {
       this.setEditMode(false);
       this.setEditModeParticipantUser(false); // isEditModeParticipantUserをfalseに設定する
       if (!this.event.id) {
         this.setEvent(null);
+        this.guestSelectFormData = []; // guestSelectFormDataを空に初期化
+        this.facilitiesFormData = []; // facilitiesFormDataを空に初期化
         this.setParticipantUsers([]); // 参加者を空にする
       }
     },

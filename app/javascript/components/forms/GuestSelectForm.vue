@@ -55,18 +55,20 @@ export default {
   methods: {
     ...mapMutations('participants', ['setSelectedParticipants']),
     updateSelectedValue(value) {
-      this.selectedParticipants = value;
-      this.setSelectedParticipants(value); // Vuex stateを更新
+      this.setSelectedParticipants(value);
+      this.$emit('input', value); // 参加者情報を親コンポーネントに送信
     },
     onSelectionChange(value) {
-      this.$emit('input', value);
+      this.setSelectedParticipants(value);
+      this.$emit('input', value); // 参加者情報を親コンポーネントに送信
       this.$refs.autocomplete.blur();
     },
     removeParticipant(index) {
       const newValue = [...this.selectedParticipants];
       newValue.splice(index, 1);
+      this.$store.commit('participants/setSelectedParticipants', newValue);
       this.selectedParticipants = newValue;
-      this.setSelectedParticipants(newValue); // Vuex stateを更新
+      this.$emit('input', newValue); // 参加者情報を親コンポーネントに送信
     },
   },
   mounted() {

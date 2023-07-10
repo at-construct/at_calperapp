@@ -107,7 +107,7 @@ export default {
       participantUsers.forEach(participantEvent => {
         if (participantEvent.id === event.id) {
           participantEvent.participants.forEach(participant => {
-            if (!uniqueFacilities.includes(participant) && (participant === "会議室A" || participant === "ホールA" ||  participant === "ハイエース")) {
+            if (!uniqueFacilities.includes(participant) && (participant === "会議室A" || participant === "ホールA" || participant === "ハイエース")) {
               uniqueFacilities.push(participant);
             }
           });
@@ -120,6 +120,7 @@ export default {
       this.setParticipantUsers([]);
       this.setEditMode(false);
       this.setEditModeParticipantUser(false);
+      this.setSelectedParticipants([]); // 選択された参加者を空にする
     },
     del() {
       this.showDeleteConfirmation = true; // 警告ダイアログを表示
