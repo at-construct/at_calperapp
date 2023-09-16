@@ -1,0 +1,42 @@
+// 一般の文字サイズの定義
+$list-item-font-size: 16px;
+$small-font-size: 14px;
+
+// 共通設定
+.list-item-title,
+.facility-list-item-title {
+  overflow: visible;
+
+  .icon {
+    margin-right: 0.125rem;
+  }
+
+  .calendar-name {
+    font-size: $list-item-font-size;
+  }
+}
+
+// その他の文字サイズ設定
+.font-size-large {
+  font-size: $list-item-font-size;
+}
+
+.font-size-small {
+  font-size: $small-font-size;
+}
+
+// その他のアイコンサイズ
+.icon-size-small {
+  font-size: $list-item-font-size;
+}
+
+// リストのボーダー
+.tight-up-hr {
+  margin-top: 0;
+  margin-bottom: 0.8rem;
+}
+
+.tight-under-hr {
+  margin-top: 0;
+  margin-bottom: 0.8rem;
+}

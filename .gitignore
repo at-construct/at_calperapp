@@ -2,7 +2,7 @@
 /.bundle
 
 # Ignore all logfiles and tempfiles.
-# /log/*
+/log/*
 # /tmp/*
 # !/log/.keep
 # !/tmp/.keep
@@ -32,10 +32,10 @@ localhost-key.pem
 localhost.pem
 .git
 /vendor/
-/tmp/
 .DS_Store
 
 # Ignore Heroku-related files and directories
 /node_modules/
 /log/
 /tmp/
+/path/

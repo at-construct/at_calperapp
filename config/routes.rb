@@ -1,49 +1,61 @@
 Rails.application.routes.draw do
-  devise_for :users, :controllers => {
-    :registrations => 'users/registrations',
-    :sessions => 'users/sessions'
-  } 
+  devise_for :users, controllers: {
+    registrations: 'users/registrations',
+    sessions: 'users/sessions'
+  }
 
-  get 'home/index'
-  get '/index/frome'
-  post "/sign_in", to: "sessions#create"
-  
   root to: 'home#index'
 
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  # Home and Index Routes
+  get 'home/index'
+  get 'index/frome'
   
+  # Notification Routes
+  get 'users/notifications', to: 'users#notifications'
+  get 'notifications/unread', to: 'notifications#unread'
+  get 'notifications/unread_count', to: 'notifications#unread_count'
+  get 'notifications/index_with_participants_and_read_status', to: 'notifications#index_with_participants_and_read_status'
+  patch 'notifications/:id/mark_as_read', to: 'notifications#mark_as_read'
+  patch 'notifications/:id/read_status', to: 'notifications#read_status'
+  get 'notifications/read', to: 'notifications#read_notifications'
+  put '/notifications/mark_as_read', to: 'notifications#mark_as_read'
+  
+  
+  # Resources
   resources :events, only: [:index, :show, :create, :update, :destroy] do
     collection do
-      get 'all' # /events/all
-      get 'index_with_participants' # /events/index_with_participants 
+      get 'all'
+      get 'my_events_with_participants'
+      get 'selected_user_events'
     end
   end
+
   resources :calendars, only: [:index, :show, :create, :update, :destroy]
   resources :groups, only: [:index, :show, :create, :update, :destroy]
   resources :users, only: [:index, :show, :create, :update, :destroy] do
     collection do
-      get 'excerpt' # /users/excerpt
+      get 'excerpt'
     end
   end
 
   resources :password_resets, only: [:new, :create, :edit, :update]
-  #Techpit Add
+
   resources :participants, only: [:index, :show, :create, :update, :destroy] do
     collection do
-      get 'event_excerpt' # /participants/event_excerpt
-      get 'user_excerpt' # /participants/user_excerpt
-      post 'user_excerpt' # /participants/user_excerpt
-      get 'events_with_participants' # /participants/events_with_participants
-      get 'all' # /participants/all
+      get 'event_excerpt'
+      get 'user_excerpt'
+      post 'user_excerpt'
+      get 'all'
+      get 'participants_with_events'
+      get 'events_with_participants'
     end
   end
 
   resources :user_visibilities, only: [:index, :update]
 
+  # Devise specific routes
   devise_scope :user do
-    get "sign_in", :to => "users/sessions#new"
-    post   '/sign_in',   to: 'sessions#create'
-    get "sign_out", :to => "users/sessions#destroy" 
+    get 'sign_in', to: 'users/sessions#new'
+    get 'sign_out', to: 'users/sessions#destroy'
   end
-
 end

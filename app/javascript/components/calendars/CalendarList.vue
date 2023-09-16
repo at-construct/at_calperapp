@@ -1,13 +1,13 @@
 <template>
   <v-list dense>
-    <hr>
+    <hr class="tight-up-hr">
     <!-- 設備以外のカレンダーリストを表示する -->
     <v-list-item-group :value="selectedItem">
       <v-list-group v-for="calendar in filteredCalendars" :key="calendar.id" class="mb-3">
         <template v-slot:activator>
-          <v-list-item-title style="overflow: visible;">
-            <v-icon :color="calendar.color" class="mr-2" small>mdi-square</v-icon>
-              <span style="font-size: 16px;">{{ calendar.name }}</span>
+          <v-list-item-title class="list-item-title">
+            <v-icon :color="calendar.color" class="icon" small>mdi-square</v-icon>
+              <span class="calendar-name">{{ calendar.name }}</span>
             <!-- <v-btn icon @click="edit(calendar)">
               <v-menu transition="scale-transition" offset-y min-width="100px">
                 <template v-slot:activator="{ on }">
@@ -45,26 +45,13 @@
       </v-list-group>
     </v-list-item-group>
 
-    <hr>
+    <hr class="tight-under-hr">
     <!-- 設備カレンダーを表示する -->
     <v-list-group :value="false" v-for="calendar in facilityCalendar" :key="calendar.id">
       <template v-slot:activator>
-        <v-list-item-title style="overflow: visible;">
-          <v-icon :color="calendar.color" class="mr-2" small>mdi-square</v-icon>
-          <span style="font-size: 16px;">{{ calendar.name }}</span>
-          <!-- <v-btn icon @click="edit(calendar)">
-            <v-menu transition="scale-transition" offset-y min-width="100px">
-              <template v-slot:activator="{ on }">
-                <v-btn icon v-on="on">
-                  <v-icon size="12px">mdi-pencil</v-icon>
-                </v-btn>
-              </template>
-              <v-list>
-                <v-list-item @click="edit(calendar)">編集</v-list-item>
-                <v-list-item @click="del(calendar)">削除</v-list-item>
-              </v-list>
-            </v-menu>
-          </v-btn> -->
+        <v-list-item-title class="facility-list-item-title">
+          <v-icon :color="calendar.color" class="icon" small>mdi-square</v-icon>
+          <span class="calendar-name">{{ calendar.name }}</span>
         </v-list-item-title>
       </template>
 
@@ -88,13 +75,13 @@
     </v-list-group>
 
     <!-- リストを追加処理 -->
-    <v-list-item>
+    <!-- <v-list-item>
       <v-list-item-content>
-        <v-subheader style="font-size: 14px;">リストを追加</v-subheader>
+        <v-subheader class="font-size-small">リストを追加</v-subheader>
       </v-list-item-content>
       <v-list-item-action>
         <v-btn icon @click="initCalendar">
-          <v-icon size="16px">mdi-plus</v-icon>
+          <v-icon class="icon-size-small">mdi-plus</v-icon>
         </v-btn>
       </v-list-item-action>
     </v-list-item>
@@ -107,7 +94,7 @@
       >
         <CalendarFormDialog v-if="calendar !== null" />
       </v-dialog>
-    </template>
+    </template> -->
 
     <!-- OtherCalendarコンポーネントを呼び出す -->
     <v-dialog
@@ -120,16 +107,6 @@
         :group="selectedGroup"
         @close="handleOtherCalendarClose"
       />
-    </v-dialog>
-
-    <!-- 日付クリック時のイベント一覧ダイアログ -->
-    <v-dialog
-      :value="clickedDate !== null"
-      persistent
-      max-width="800"
-      max-high="800"
-    >
-      <DayEventList />
     </v-dialog>
   </v-list>
 </template>
@@ -163,12 +140,11 @@ export default {
   computed: {
     ...mapGetters('calendars', ['calendars', 'calendar']),
     ...mapGetters('groups', ['groups']),
-    ...mapGetters('events', ['clickedDate']),
     filteredCalendars() {
-      return this.calendars.filter(calendar => calendar.name !== '会議室' && calendar.name !== '社用車');
+      return this.calendars.filter(calendar => calendar.name !== '会議室' && calendar.name !== '社用車' && calendar.name !== 'スタジオ');
     },
     facilityCalendar() {
-      return this.calendars.filter(calendar => calendar.name === '会議室' || calendar.name === '社用車');
+      return this.calendars.filter(calendar => calendar.name === '会議室' || calendar.name === '社用車' || calendar.name === 'スタジオ');
     },
     title() {
       return format(new Date(this.value), 'yyyy年 M月');
@@ -186,6 +162,7 @@ export default {
     ]),
     ...mapActions('groups', [
       'fetchGroups',
+      'setSelectedGroup',
     ]),
     initCalendar() {
       this.setCalendar({
@@ -196,6 +173,7 @@ export default {
     openCalendarDialog(group) {
       this.selectedCalendar = group.calendar;
       this.selectedGroup = group;
+      this.setSelectedGroup(group); 
       this.isCalendarDialogOpen = true;
     },
 
@@ -214,3 +192,6 @@ export default {
 };
 </script>
 
+<style scoped lang="scss">
+  @import "../../../assets/stylesheets/calendar_list.scss";
+</style>

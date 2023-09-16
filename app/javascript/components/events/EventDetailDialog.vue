@@ -19,41 +19,43 @@
       <v-card>
         <v-card-title class="headline">この予定を削除しますか？</v-card-title>
         <v-card-actions>
-          <v-btn text color="red" @click="deleteEventConfirmed" style="font-size: 14px;">削除</v-btn>
-          <v-btn text @click="showDeleteConfirmation = false" style="font-size: 14px;">キャンセル</v-btn>
+          <v-btn text color="red" @click="deleteEventConfirmed" class="btn-delete">削除</v-btn>
+          <v-btn text @click="showDeleteConfirmation = false" class="btn-cancel">キャンセル</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
     <v-card-title>
-      <DialogSection icon="mdi-square" :color="event.color" class="event-name" style="font-size: 18px;">
+      <DialogSection icon="mdi-square" :color="event.color" class="event-name event-font-size-large">
         {{ event.name }}
       </DialogSection>
     </v-card-title>
     <v-card-text>
-      <DialogSection icon="mdi-clock-time-three-outline" class="event-date" style="font-size: 14px;">
+      <DialogSection icon="mdi-clock-time-three-outline" class="event-date event-font-size-small">
         {{ event.startDate }}{{ event.timed ? ' ' + event.startTime : ''}} ~
         {{ event.endDate }} 
         {{ event.timed ? event.endTime : ' 終日' }}
       </DialogSection>
     </v-card-text>
     <v-card-text>
-      <DialogSection icon="mdi-card-text-outline" class="event-description" style="font-size: 14px;">
+      <DialogSection icon="mdi-card-text-outline" class="event-description event-font-size-small">
         {{ event.description || '予定の説明なし' }}
       </DialogSection>
     </v-card-text>
     <v-card-text>
-      <DialogSection icon="mdi-account-group-outline" style="font-size: 14px;">
-        参加予定者<br>{{ (participantUsers.length > 0 && getUniqueParticipants(event, participantUsers).join(', ')) || 'なし' }}
-      </DialogSection>
+    <!-- v-forディレクティブを使ってparticipantUsersからユーザー名を表示 -->
+    <DialogSection icon="mdi-account-group-outline" class="event-participants event-font-size-small">
+      参加予定者<br>{{ (participantUsers.length > 0 && getUniqueParticipants(event, participantUsers).map(user => user.name).join(', ')) || 'なし' }}
+    </DialogSection>
+        </v-card-text>
+        <v-card-text>
+    <!-- v-forディレクティブを使ってparticipantUsersから施設名を表示 -->
+    <DialogSection icon="mdi-office-building-outline" class="event-facilities event-font-size-small">
+      利用予定設備<br>{{ (participantUsers.length > 0 && getUniqueFacilities(event, participantUsers).map(user => user.name).join(', ')) || 'なし' }}
+    </DialogSection>
     </v-card-text>
     <v-card-text>
-      <DialogSection icon="mdi-office-building-outline" style="font-size: 14px;">
-        利用予定設備<br>{{ (participantUsers.length > 0 && getUniqueFacilities(event, participantUsers).join(', ')) || 'なし' }}
-      </DialogSection>
-    </v-card-text>
-    <v-card-text>
-      <DialogSection icon="mdi-head-outline" style="font-size: 14px;">
+      <DialogSection icon="mdi-head-outline" class="event-creator event-font-size-small">
         作成者<br>{{ event.user_name || 'なし' }}
       </DialogSection>
     </v-card-text>
@@ -79,7 +81,7 @@ export default {
   },
   computed: {
     ...mapGetters('events', ['event', 'isEditMode']),
-    ...mapGetters('participants', ['participantUsers','selectedParticipants']),
+    ...mapGetters('participants', ['participantUsers','selectedParticipants', 'participantAllEvents']),
     ...mapGetters('users', ['users'])
   },
   created() {
@@ -89,32 +91,45 @@ export default {
     ...mapActions('events', ['setEvent', 'deleteEvent', 'setEditMode']),
     ...mapActions('participants', ['fetchParticipantUsers','setParticipantUsers', 'setEditModeParticipantUser', 'setSelectedParticipants']),
     ...mapActions('users', ['setUsers']),
-    getUniqueParticipants(event, participantUsers) {
-      const uniqueParticipants = [];
-      participantUsers.forEach(participantEvent => {
-        if (participantEvent.id === event.id) {
-          participantEvent.participants.forEach(participant => {
-            if (!uniqueParticipants.includes(participant) && participant !== "会議室A" && participant !== "ホールA" && participant !== "ハイエース") {
-              uniqueParticipants.push(participant);
-            }
-          });
-        }
-      });
-      return uniqueParticipants;
-    },
-    getUniqueFacilities(event, participantUsers) {
-      const uniqueFacilities = [];
-      participantUsers.forEach(participantEvent => {
-        if (participantEvent.id === event.id) {
-          participantEvent.participants.forEach(participant => {
-            if (!uniqueFacilities.includes(participant) && (participant === "会議室A" || participant === "ホールA" || participant === "ハイエース")) {
-              uniqueFacilities.push(participant);
-            }
-          });
-        }
-      });
-      return uniqueFacilities;
-    },
+
+  // getUniqueParticipantsメソッド
+  getUniqueParticipants(event, participantUsers) {
+    const uniqueParticipants = [];
+    const facilities = ["7Fテーブル", "6F会議室(ソファー)", "9Fスタジオ", "ハイエース"];
+    participantUsers.forEach(participantEvent => {
+      if (participantEvent.id === event.id) {
+        participantEvent.participants.forEach(participant => {
+          const { id, name } = participant; // idとnameを抽出
+          if (!uniqueParticipants.some(p => p.id === id) && !facilities.includes(name)) {
+            uniqueParticipants.push({ id, name }); // 抽出したidとnameを新しいオブジェクトに格納
+          }
+        });
+      }
+    });
+    return uniqueParticipants;
+  },
+  // isFacilityメソッド：参加者が施設であるかを判定するメソッド
+  isFacility(participant) {
+    const facilities = ["7Fテーブル", "6F会議室(ソファー)", "9Fスタジオ", "ハイエース"];
+    return facilities.includes(participant.name);
+  },
+  
+  // getUniqueFacilitiesメソッド
+  getUniqueFacilities(event, participantUsers) {
+    const uniqueFacilities = [];
+    participantUsers.forEach(participantEvent => {
+      if (participantEvent.id === event.id) {
+        participantEvent.participants.forEach(participant => {
+          const facilityNames = ["7Fテーブル", "6F会議室(ソファー)", "9Fスタジオ", "ハイエース"];
+          if (facilityNames.includes(participant.name) && !uniqueFacilities.some(f => f.name === participant.name)) {
+            uniqueFacilities.push({ id: participant.id, name: participant.name });
+          }
+        });
+      }
+    });
+    return uniqueFacilities;
+  },
+
     closeDialog() {
       this.setEvent(null);
       this.setParticipantUsers([]);
@@ -134,8 +149,16 @@ export default {
       this.setParticipantUsers(this.participantUsers);
       this.setEditMode(true);
       this.setEditModeParticipantUser(true);
-      this.setSelectedParticipants(this.getUniqueParticipants(this.event, this.participantUsers));
+      
+      // 参加者と施設の両方を選択された参加者に設定
+      const uniqueParticipants = this.getUniqueParticipants(this.event, this.participantUsers);
+      const uniqueFacilities = this.getUniqueFacilities(this.event, this.participantUsers);
+      this.setSelectedParticipants([...uniqueParticipants, ...uniqueFacilities]);
     },
   },
 };
 </script>
+
+<style scoped lang="scss">
+  @import "../../../assets/stylesheets/event_detail_dialog.scss";
+</style>

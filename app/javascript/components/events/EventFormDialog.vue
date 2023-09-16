@@ -69,10 +69,16 @@
     <v-dialog v-model="showAlert" max-width="500px">
       <v-card>
         <v-card-title class="red--text">
-          <span class="headline">予定の重複</span>
+          <span class="headline">予定重複</span>
         </v-card-title>
         <v-card-text>
-          <p>{{ duplicateParticipantName }}は予定が重複します。登録しますか？</p>
+          <div v-if="duplicateOrganizerNames.length > 0">
+            <p>{{ `作成者の${duplicateOrganizerNames.join(', ')} は、他の予定と重複します。登録しますか？` }}</p>
+          </div>
+          <div v-if="duplicateParticipantNames.length > 0">
+            <p>{{ `参加者の${duplicateParticipantNames.join(', ')} は、他の予定と重複します。登録しますか？` }}</p>
+          </div>
+          <div v-if="errorMessage" class="red--text">{{ errorMessage }}</div>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -81,6 +87,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
   </v-card>
 </template>
 
@@ -120,10 +127,14 @@ export default {
     description: '',
     color: '',
     allDay: false,
-    showAlert: false,
     duplicateParticipantName: '',
     guestSelectFormData: [],
     facilitiesFormData: [],
+    errorMessage: '',
+    showAlert: false,
+    duplicateType: '',
+    duplicateOrganizerNames: [],
+    duplicateParticipantNames: [],
   }),
   watch: {
     guestSelectFormData(newVal) {
@@ -139,9 +150,12 @@ export default {
     endDate: { required },
   },
   computed: {
-    ...mapGetters('events', ['event']),
-    ...mapGetters('participants', ['participantUsers']),
+    ...mapGetters('events', ['event', 'events']),
+    ...mapGetters('participants', ['participantsList', 'participantUsers']),
     ...mapGetters('users', ['users']),
+    currentUser() {
+      return this.$store.state.events.currentUser;
+    },
     isInvalidDatetime() {
       return !isGreaterEndThanStart(
         this.startDate,
@@ -173,6 +187,7 @@ export default {
       this.guestSelectFormData = participants.filter(participant => participant.type === 'guest');
       this.facilitiesFormData = participants.filter(participant => participant.type === 'facility');
     }
+    this.fetchParticipantsList();
   },
 
   methods: {
@@ -191,6 +206,8 @@ export default {
       'setParticipantUsers',
       'setEditModeParticipantUser',
       'setSelectedParticipants',
+      'fetchParticipantUsers',
+      'fetchParticipantsList'
     ]),
     closeDialog() {
       this.setEvent(null);
@@ -199,59 +216,72 @@ export default {
       this.setEditModeParticipantUser(false); // isEditModeParticipantUserをfalseに設定する
       this.setSelectedParticipants([]); // 選択された参加者を空にする
     },
+
     submit() {
+      // 編集モードでない場合は重複チェックを実行
+      const eventId = this.event ? this.event.id : null;
+      if (!eventId) {
+        let start = new Date(`${this.startDate} ${this.startTime}`);
+        let end = new Date(`${this.endDate} ${this.endTime}`);
+    
+        if (this.isOverlapping(start, end)) {
+          // 重複している場合はエラーメッセージを表示する
+          this.showAlert = true;
+          return;
+        }
+      }
+
       if (this.isInvalid) {
         this.showAlert = true; // バリデーションエラー時にアラートを表示する
         return;
       }
-    
-      const duplicateParticipants = this.checkDuplicateParticipants();
-      if (duplicateParticipants.length > 0) {
-        this.handleDuplicateParticipant(duplicateParticipants[0]); // 重複する参加者が存在する場合、その名前をhandleDuplicateParticipantに渡す
-        return;
-      }
-    
+
       // GuestSelectFormコンポーネントに変更を反映する
       this.guestSelectFormData = [...this.guestSelectFormData];
       this.facilitiesFormData = [...this.facilitiesFormData];
-    
+
       const eventParams = {
-          id: this.event.id || null,
-          name: this.name,
-          start: `${this.startDate || ''} ${this.startTime || ''}`,
-          end: `${this.endDate || ''} ${this.endTime || ''}`,
-          description: this.description,
-          color: this.color,
-          timed: !this.allDay,
-          participant: this.selectedParticipants,
-          user: this.selectedParticipants,
-        };
-      
-        if (this.event && this.event.id) {
+        id: this.event.id || null,
+        name: this.name,
+        start: `${this.startDate || ''} ${this.startTime || ''}`,
+        end: `${this.endDate || ''} ${this.endTime || ''}`,
+        description: this.description,
+        color: this.color,
+        timed: !this.allDay,
+        participant: this.selectedParticipants,
+        user: this.selectedParticipants,
+      };
+
+      console.log("Sending the following params to backend:", JSON.parse(JSON.stringify(eventParams)));
+
+      if (this.event && this.event.id) {
         this.updateEvent(eventParams)
           .then(() => {
             this.closeDialog();
           })
           .catch((error) => {
-            // エラーハンドリング
+            this.handleErrorResponse(error);
           });
-        } else {
+      } else {
         this.createEvent(eventParams)
           .then(() => {
             this.closeDialog();
           })
           .catch((error) => {
-            // エラーハンドリング
+            if (error.response && error.response.status === 422) {
+              const errorMessage = error.response.data.error || 'イベントの重複エラーが発生しました。';
+              this.errorMessage = errorMessage; // エラーメッセージをセット
+            }
           });
-        }
+      }
     },
     cancel() {
       this.setEditMode(false);
       this.setEditModeParticipantUser(false); // isEditModeParticipantUserをfalseに設定する
       if (!this.event.id) {
         this.setEvent(null);
-        this.guestSelectFormData = []; // guestSelectFormDataを空に初期化
-        this.facilitiesFormData = []; // facilitiesFormDataを空に初期化
+        this.guestSelectFormData = []; // guestSelect FormDataを空に初期化
+        this.facilitiesFormData = []; // facilities FormDataを空に初期化
         this.setParticipantUsers([]); // 参加者を空にする
       }
     },
@@ -261,20 +291,17 @@ export default {
     },
     confirmDuplicateEvent() {
       // 重複している場合の処理を記述する（登録するなど）
-      // console.log('登録しました');
       this.showAlert = false; // アラートを非表示にする
       this.saveEvent();
+      this.closeDialog(); // 保存後にダイアログを閉じる
+      this.duplicateOrganizerNames = []; // 重複ユーザーリストをクリア
     },
     cancelDuplicateEvent() {
       // 重複している場合の処理を記述する（キャンセルするなど）
-      // console.log('キャンセルしました');
       this.showAlert = false; // アラートを非表示にする
-    },
-    checkDuplicateParticipants() {
-      const participantNames = this.selectedParticipants.map((participant) => participant.name);
-      const uniqueNames = new Set(participantNames);
-      const duplicateNames = participantNames.filter((name) => participantNames.indexOf(name) !== participantNames.lastIndexOf(name));
-      return Array.from(new Set(duplicateNames));
+      // this.closeDialog(); // キャンセル後にダイアログを閉じる
+      this.duplicateOrganizerNames = []; // 重複ユーザーリストをクリア
+      console.log('重複しています。キャンセルしました。');
     },
     saveEvent() {
       const eventParams = {
@@ -289,10 +316,9 @@ export default {
         user: this.selectedParticipants,
       };
 
-      if (this.event && this.event.id) {  
+      if (this.event && this.event.id) {
         this.updateEvent(eventParams)
           .then(() => {
-            this.closeDialog();
           })
           .catch((error) => {
             console.error(error);
@@ -300,13 +326,83 @@ export default {
       } else {
         this.createEvent(eventParams)
           .then(() => {
-            this.closeDialog();
           })
           .catch((error) => {
             console.error(error);
           });
       }
     },
+    handleErrorResponse(error) {
+      if (error.response && error.response.status === 409) {
+        const { message, participantName } = error.response.data;
+        this.duplicateParticipantName = participantName;
+        this.showAlert = true;
+      }
+    },
+
+isOverlapping(start, end) {
+  console.log("Participants List:", this.participantsList);
+  console.log("Selected Participants:", this.selectedParticipants);
+  let isOverlapFound = false;
+
+  this.duplicateOrganizerNames = [];
+  this.duplicateParticipantNames = [];
+  this.duplicateType = [];
+
+  for (let event of this.events) {
+    if ((start >= event.start && start < event.end) ||
+        (end > event.start && end <= event.end) ||
+        (start <= event.start && end >= event.end)) {
+
+      isOverlapFound = true;
+      
+      // 登録者の重複チェック
+      if (event.user_id === this.currentUser.id && !this.duplicateType.includes('user')) {
+        this.duplicateType.push('user');
+        this.duplicateOrganizerNames.push(this.currentUser.name);
+      } else {
+        const overlappingParticipant = this.selectedParticipants.find(p => p.id === event.user_id);
+
+        if (overlappingParticipant) {
+          if (!this.duplicateType.includes('participant')) {
+            this.duplicateType.push('participant');
+          }
+          if (!this.duplicateParticipantNames.includes(overlappingParticipant.name)) {
+            this.duplicateParticipantNames.push(overlappingParticipant.name);
+          }
+        }
+      }
+
+      // 参加者の重複チェック: participantsListを使用
+      if (this.participantsList && Array.isArray(this.participantsList)) {
+        for (let existingParticipant of this.participantsList) {
+        console.log("Inspecting existing participant:", existingParticipant);  // ログ追加
+      
+          if (this.selectedParticipants.includes(existingParticipant.user_id)) {
+            console.log("Duplicate participant found:", existingParticipant);
+      
+            if (!this.duplicateType.includes('participant')) {
+              this.duplicateType.push('participant');
+            }
+      
+            if (!this.duplicateParticipantNames.includes(existingParticipant.user_name)) { // user_nameが存在すると仮定
+              console.log("Adding to duplicate names:", existingParticipant.user_name); 
+              this.duplicateParticipantNames.push(existingParticipant.user_name);
+            }
+          }
+        }
+      }
+
+    }
+  }
+
+  return isOverlapFound;
+}
+
   },
 };
 </script>
+
+<style scoped lang="scss">
+  @import "../../../assets/stylesheets/event_form_dialog.scss";
+</style>

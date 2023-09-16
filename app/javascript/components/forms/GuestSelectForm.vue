@@ -11,7 +11,6 @@
           item-text="name"
           item-value="id"
           multiple
-          :value="selectedParticipants"
           :items="filteredUsers"
           @input="updateSelectedValue"
           @change="onSelectionChange"
@@ -21,7 +20,7 @@
               v-if="index < selectedParticipants.length"
               :key="item.id"
               close
-              @click:close="removeParticipant(index)"
+              @click:close="removeParticipant(item)"
             >
               {{ item.name }}
             </v-chip>
@@ -46,35 +45,41 @@ export default {
       selectedParticipants: [],
     };
   },
+  mounted() {
+  this.selectedParticipants = [...this.vuexSelectedParticipants];
+  this.$emit('input', this.selectedParticipants);  // ここで親に通知
+  },
   computed: {
     ...mapGetters('users', ['users']),
     filteredUsers() {
-      return this.users.filter(user => user.name !== '会議室A' && user.name !== 'ホールA' && user.name !== 'ハイエース');
+      return this.users.filter(user => user.name !== '6F会議室(ソファー)' && user.name !== '7Fテーブル' && user.name !== 'ハイエース' && user.name !== '9Fスタジオ');
+    },
+    vuexSelectedParticipants() {
+      return this.$store.getters['participants/selectedParticipants'];
     },
   },
   methods: {
     ...mapMutations('participants', ['setSelectedParticipants']),
     updateSelectedValue(value) {
-      this.setSelectedParticipants(value);
+      this.selectedParticipants = value;
+      this.setSelectedParticipants(value); // ここでVuexの状態も更新
       this.$emit('input', value); // 参加者情報を親コンポーネントに送信
+    },
+    removeParticipant(item) {
+      const index = this.selectedParticipants.findIndex(participant => participant.id === item.id);
+      if (index !== -1) {
+        const newValue = [...this.selectedParticipants];
+        newValue.splice(index, 1);
+        this.selectedParticipants = newValue;
+        this.setSelectedParticipants(newValue); // ここでVuexの状態も更新
+        this.$emit('input', newValue);
+      }
     },
     onSelectionChange(value) {
       this.setSelectedParticipants(value);
       this.$emit('input', value); // 参加者情報を親コンポーネントに送信
-      this.$refs.autocomplete.blur();
+      this.$refs.autocomplete.blur();  // ここでフォーカスを外す
     },
-    removeParticipant(index) {
-      const newValue = [...this.selectedParticipants];
-      newValue.splice(index, 1);
-      this.$store.commit('participants/setSelectedParticipants', newValue);
-      this.selectedParticipants = newValue;
-      this.$emit('input', newValue); // 参加者情報を親コンポーネントに送信
-    },
-  },
-  mounted() {
-    if (this.$store.state.participants.selectedParticipants.length > 0) {
-      this.selectedParticipants = [...this.$store.state.participants.selectedParticipants];
-    }
   },
 };
 </script>

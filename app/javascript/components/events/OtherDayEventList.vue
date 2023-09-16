@@ -6,11 +6,11 @@
       </v-btn>
     </v-card-actions>
     <v-card-title class="d-flex justify-center">
-      {{ formatDateToJa(clickedDate) }}
+      {{ formatDateToJa(otherClickedDate) }}
     </v-card-title>
     <v-card-text>
       <v-list>
-        <v-list-item v-for="event in dayEvents" :key="event.id">
+        <v-list-item v-for="event in otherDayEvents" :key="event.id">
           <v-list-item-content class="pa-0">
             <v-btn
               depressed
@@ -44,31 +44,19 @@ export default {
     dialog: null,
   }),
   computed: {
-    ...mapGetters('events', ['dayEvents', 'clickedDate']),
+    ...mapGetters('events', ['otherDayEvents', 'otherClickedDate']),
+    ...mapGetters('groups', ['selectedGroup']), 
   },
   methods: {
-    ...mapActions('events', ['setClickedDate', 'setEvent']),
+    ...mapActions('events', ['otherSetClickedDate']),
     formatDateToJa,
-
     closeDialog() {
-      this.setClickedDate(null);
+      this.otherSetClickedDate(null);
     }
   }
 };
 </script>
 
-
-<style>
-.event-btn {
-  font-size: 12px;
-}
-
-.event-date {
-  font-size: 12px;
-}
-
-.event-name {
-  font-size: 12px;
-  font-weight: bold;
-}
-</style>  
+<style scoped lang="scss">
+  @import "../../../assets/stylesheets/other_day_event_list.scss";
+</style>
