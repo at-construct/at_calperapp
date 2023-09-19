@@ -48,7 +48,7 @@ export default {
   computed: {
     ...mapGetters('users', ['users']),
     filteredUsers() {
-      return this.users.filter(user => user.name === '6F会議室(ソファー)' || user.name === '7Fテーブル' || user.name === 'ハイエース'|| user.name === '9Fスタジオ');
+      return this.users.filter(user => user.name === 'A会議室' || user.name === 'Aスタジオ' || user.name === 'ハイエース');
     },
   },
   methods: {

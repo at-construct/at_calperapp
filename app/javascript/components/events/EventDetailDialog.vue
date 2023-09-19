@@ -95,7 +95,7 @@ export default {
   // getUniqueParticipantsメソッド
   getUniqueParticipants(event, participantUsers) {
     const uniqueParticipants = [];
-    const facilities = ["7Fテーブル", "6F会議室(ソファー)", "9Fスタジオ", "ハイエース"];
+    const facilities = ["A会議室", "Aスタジオ", "ハイエース"];
     participantUsers.forEach(participantEvent => {
       if (participantEvent.id === event.id) {
         participantEvent.participants.forEach(participant => {
@@ -110,7 +110,7 @@ export default {
   },
   // isFacilityメソッド：参加者が施設であるかを判定するメソッド
   isFacility(participant) {
-    const facilities = ["7Fテーブル", "6F会議室(ソファー)", "9Fスタジオ", "ハイエース"];
+    const facilities = ["A会議室", "Aスタジオ", "ハイエース"];
     return facilities.includes(participant.name);
   },
   
@@ -120,7 +120,7 @@ export default {
     participantUsers.forEach(participantEvent => {
       if (participantEvent.id === event.id) {
         participantEvent.participants.forEach(participant => {
-          const facilityNames = ["7Fテーブル", "6F会議室(ソファー)", "9Fスタジオ", "ハイエース"];
+          const facilityNames = ["A会議室", "Aスタジオ", "ハイエース"];
           if (facilityNames.includes(participant.name) && !uniqueFacilities.some(f => f.name === participant.name)) {
             uniqueFacilities.push({ id: participant.id, name: participant.name });
           }
