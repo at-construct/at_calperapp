@@ -71,7 +71,7 @@
           :events="events"
           :type="type"
           @change="handleChange"
-          color="gray"
+          color="primary"
           locale="ja-jp"
           :day-format="timestamp => new Date(timestamp.date).getDate()"
           :month-format="timestamp => new Date(timestamp.date).getMonth() + 1 + ' /'"
