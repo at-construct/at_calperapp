@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
   def index
+    #全てのユーザーを返す
     render json: User.all
   end
 
@@ -8,6 +9,7 @@ class UsersController < ApplicationController
   end
 
   def create
+    #リクエストパラメーターを元にUserオブジェクトを作成
     user = User.new(user_params)
     if user.save
       render json: user
@@ -21,6 +23,11 @@ class UsersController < ApplicationController
     render json: User.where.not(id: current_user.id)
   end
 
+  def notifications
+    #カレントユーザーの通知を返す
+    notifications = current_user.notifications.order(created_at: :desc)
+    render json: notifications
+  end
 
   private
 
@@ -28,5 +35,4 @@ class UsersController < ApplicationController
     #リクエストパラメーターのうち、permitで指定したものだけを受け取る
     params.require(:user).permit(:name, :email)
   end
-
 end

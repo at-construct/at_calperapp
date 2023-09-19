@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  sender: one
+  recipient: one
+  appointment: one
+  read: false
+
+two:
+  sender: two
+  recipient: two
+  appointment: two
+  read: false

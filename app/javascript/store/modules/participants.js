@@ -9,6 +9,7 @@ const state = {
   isEditModeParticipantUser: false,
   editModeParticipantUser: null,
   selectedParticipants: [], // 参加者の選択状態を保持する配列
+  participantsList: [],
 };
 
 const getters = {
@@ -28,14 +29,17 @@ const getters = {
         end: new Date(participantAllEvent.end),
       };
     }),
+  participantsList: (state) => state.participantsList,
   participantUsers: (state) => state.participantUsers,
   isEditModeParticipantUser: (state) => state.isEditModeParticipantUser,
   selectedParticipants: (state) => state.selectedParticipants,
 };
 
 const mutations = {
-  setParticipantAllEvents: (state, participantAllEvents) =>
-    (state.participantAllEvents = participantAllEvents),
+  setParticipantAllEvents: (state, allEvents) =>
+    (state.participantAllEvents = allEvents),
+  setParticipantsList: (state, participantsList) => 
+    (state.participantsList = participantsList),
   setParticipantEvents: (state, participantEvents) =>
     (state.participantEvents = participantEvents),
   appendParticipantEvent: (state, participantEvent) =>
@@ -67,12 +71,23 @@ const mutations = {
   setSelectedParticipants(state, participants) {
     state.selectedParticipants = participants;
   },
+  setCurrentUser: (state, user) => (state.currentUser = user),
+  setEvents: (state, events) => (state.events = events),
 };
 
 const actions = {
+  async fetchParticipants({ commit }) {
+    const response = await axios.get(`${apiUrl}/participants/index_with_participants`);
+    commit('setEvents', response.data.participants);
+    commit('setCurrentUser', response.data.current_user); 
+  },
   async fetchParticipantAllEvents({ commit }) {
     const response = await axios.get(`${apiUrl}/participants/all`);
     commit('setParticipantAllEvents', response.data);
+  },
+  async fetchParticipantsList({ commit }) {
+    const response = await axios.get(`${apiUrl}/participants`);
+    commit('setParticipantsList', response.data);
   },
   async fetchParticipantEvents({ commit }) {
     const response = await axios.get(`${apiUrl}/participants/event_excerpt`);

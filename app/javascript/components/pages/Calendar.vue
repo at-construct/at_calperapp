@@ -11,54 +11,67 @@
         </v-btn>
 
         <v-toolbar-title>
-          <v-toolbar-title style="font-size: 1.5em">{{ title }} </v-toolbar-title>
+          <v-toolbar-title class="v-toolbar-title">{{ title }}</v-toolbar-title>
         </v-toolbar-title>
 
         <v-btn icon class="mr-auto" @click="$refs.calendar.next()">
           <v-icon>mdi-chevron-right</v-icon>
         </v-btn>
 
-        <v-btn outlined x-small class="mr-auto" @click="setToday" style="font-size: 10px;">
+        <v-btn outlined x-small class="mr-auto btn-small" @click="setToday">
           今日
         </v-btn>
 
+        <!-- ヘッダーの中のベルマークのボタン -->
         <v-btn icon class="mr-auto" @click="showNotificationDialog">
           <v-icon>mdi-bell-outline</v-icon>
+          <v-badge
+            v-if="hasUnreadNotifications"
+            color="red"
+            content-class="notification-badge"
+            dot
+          ></v-badge>
         </v-btn>
+      
+        <v-dialog v-model="dialog" :key="dialogKey">
+          <NotificationDialog @close="dialog = false" />
+        </v-dialog>
 
       </v-toolbar>
     </v-sheet>
 
-    <!-- 左側ドロワー -->
-    <v-sheet height="80vh" class="d-flex">
+    <v-sheet height="100vh" class="d-flex">
+      <!-- 左側ドロワー -->
       <v-navigation-drawer v-model="drawer" absolute left temporary>
+      <div style="height: 100vh; overflow-y: auto;">
         <v-list-item-group v-model="group">
           <v-list-item @click="type = 'day'">
             <v-icon>mdi-view-day-outline</v-icon>
-            <v-list-item-title style="font-size: 14px;">　1日</v-list-item-title>
+            <v-list-item-title class="list-item-title">　1日</v-list-item-title>
           </v-list-item>
           <v-list-item @click="type = 'week'">
             <v-icon>mdi-view-week-outline</v-icon>
-            <v-list-item-title style="font-size: 14px;">　週</v-list-item-title>
+            <v-list-item-title class="list-item-title">　週</v-list-item-title>
           </v-list-item>
           <v-list-item @click="type = 'month'">
             <v-icon>mdi-grid</v-icon>
-            <v-list-item-title style="font-size: 14px;">　月</v-list-item-title>
+            <v-list-item-title class="list-item-title">　月</v-list-item-title>
           </v-list-item>
         </v-list-item-group>
         <CalendarList />
+      </div>
       </v-navigation-drawer>
 
       <!-- ホームカレンダー -->
       <!-- :events="events.concat(participantEvents)" 削除した-->
-      <v-sheet height="80vh" class="flex">
+      <v-sheet height="100vh" class="flex">
         <v-calendar
           ref="calendar"
           v-model="value"
           :events="events"
           :type="type"
           @change="handleChange"
-          color="info"
+          color="primary"
           locale="ja-jp"
           :day-format="timestamp => new Date(timestamp.date).getDate()"
           :month-format="timestamp => new Date(timestamp.date).getMonth() + 1 + ' /'"
@@ -69,6 +82,7 @@
         ></v-calendar>
       </v-sheet>
     </v-sheet>
+
     <!-- カレンダー直下にプラスボタン-->
     <v-sheet max-height="8vh">
       <v-toolbar flat>
@@ -119,32 +133,6 @@
         <DayEventList />
       </v-dialog>
     </v-row>
-
-    <!-- 通知ダイアログ -->
-    <v-dialog
-      v-model="dialog"
-      max-width="400"
-    >
-      <template v-slot:activator="{ on }">
-        <v-btn
-          icon
-          v-on="on"
-          @click="showNotificationDialog"
-        >
-        </v-btn>
-      </template>
-      <v-card>
-        <v-card-text>
-          <br>
-          <span>Aの予定 6月20日13::00〜6月20日14::00 に参加者として追加されました</span>
-          <br>
-          <hr>
-          <br>
-          <span>Cの参加者として追加された予定 6月23日13::00〜6月23日14::00 は削除されました</span>
-          <br>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
   </div>
 </template>
 
@@ -156,6 +144,7 @@ import EventFormDialog from '../events/EventFormDialog';
 import DayEventList from '../events/DayEventList';
 import CalendarList from '../calendars/CalendarList';
 import { getDefaultStartAndEnd } from '../../functions/datetime';
+import NotificationDialog from '../notifications/NotificationDialog';
 
 export default {
   name: 'Calendar',
@@ -164,6 +153,7 @@ export default {
     EventFormDialog,
     DayEventList,
     CalendarList,
+    NotificationDialog,
   },
   data: () => ({
     value: format(new Date(), 'yyyy/MM/dd'),
@@ -172,18 +162,27 @@ export default {
     group: null,
     type: 'month',
     dialog: false,
+    dialogKey: 0,
   }),
   watch: {
     group() {
       this.drawer = false;
-    }
+    },
+    dialog(newVal) {
+        console.log('Dialog value changed to:', newVal);
+    },
   },
   computed: {
     ...mapGetters('events', ['events', 'event', 'isEditMode', 'clickedDate']),
     ...mapGetters('participants', ['participantEvents', 'participantUsers']),
+    ...mapGetters('notifications', ['hasUnreadNotifications']),
     title() {
       return format(new Date(this.value), 'yyyy年 M月');
     },
+  },
+  created() {
+    console.log("Calling fetchUnreadNotificationsCount...");  // この行を追加
+    this.fetchUnreadNotificationsCount();
   },
   methods: {
     handleChange() {
@@ -201,9 +200,13 @@ export default {
       'fetchParticipantEvents',
       'fetchParticipantUsers',
     ]),
-
+    ...mapActions('notifications', [
+      'fetchUnreadNotificationsCount',
+    ]),
     showNotificationDialog() {
+      this.dialogKey++;
       this.dialog = true;
+      console.log('dialog value:', this.dialog);
     },
 
     setToday() {
@@ -239,7 +242,6 @@ export default {
         color: '#1976d2',
         description: '',
         calendarId: null,
-        user_visibility: [],
         user: [],
       };
       this.setEvent(newEvent);
@@ -268,11 +270,6 @@ export default {
 };
 </script>
 
-<style>
-.saturday {
-  background: rgba(200, 200, 250, 0.2);
-}
-.sunday {
-  background: rgba(250, 200, 200, 0.2);
-}
+<style scoped lang="scss">
+  @import "../../../assets/stylesheets/calendar.scss";
 </style>

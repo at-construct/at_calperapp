@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_05_16_101041) do
+ActiveRecord::Schema.define(version: 2023_08_25_053101) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -48,6 +48,18 @@ ActiveRecord::Schema.define(version: 2023_05_16_101041) do
     t.index ["user_id"], name: "index_groups_on_user_id"
   end
 
+  create_table "notifications", force: :cascade do |t|
+    t.bigint "sender_id", null: false
+    t.bigint "recipient_id", null: false
+    t.bigint "event_id", null: false
+    t.boolean "read", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["event_id"], name: "index_notifications_on_event_id"
+    t.index ["recipient_id"], name: "index_notifications_on_recipient_id"
+    t.index ["sender_id"], name: "index_notifications_on_sender_id"
+  end
+
   create_table "participants", force: :cascade do |t|
     t.bigint "event_id", null: false
     t.bigint "user_id", null: false
@@ -56,15 +68,6 @@ ActiveRecord::Schema.define(version: 2023_05_16_101041) do
     t.boolean "selected", default: true
     t.index ["event_id"], name: "index_participants_on_event_id"
     t.index ["user_id"], name: "index_participants_on_user_id"
-  end
-
-  create_table "user_visibilities", force: :cascade do |t|
-    t.integer "target_user_id", null: false
-    t.integer "user_id", null: false
-    t.boolean "visibility", default: true, null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["user_id", "target_user_id"], name: "index_user_visibilities_on_user_id_and_target_user_id", unique: true
   end
 
   create_table "users", force: :cascade do |t|
@@ -84,6 +87,9 @@ ActiveRecord::Schema.define(version: 2023_05_16_101041) do
   add_foreign_key "events", "users"
   add_foreign_key "groups", "calendars"
   add_foreign_key "groups", "users"
+  add_foreign_key "notifications", "events"
+  add_foreign_key "notifications", "users", column: "recipient_id"
+  add_foreign_key "notifications", "users", column: "sender_id"
   add_foreign_key "participants", "events"
   add_foreign_key "participants", "users"
 end

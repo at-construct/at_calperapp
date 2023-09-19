@@ -4,22 +4,30 @@ const apiUrl = 'https://atcalperapp.herokuapp.com';
 
 const state = {
   groups: [],
+  selectedGroup: null,
 };
 
 const getters = {
-  groups: state => state.groups
+  groups: state => state.groups,
+  selectedGroup: (state) => state.selectedGroup,
 };
 
 const mutations = {
-  setGroups(state, groups) {
+  SET_GROUPS(state, groups) {
     state.groups = groups
-  }
+  },
+  SET_SELECTED_GROUP(state, group) {
+    state.selectedGroup = group;
+  },
 };
 
 const actions = {
+  setSelectedGroup({ commit }, group) {
+    commit('SET_SELECTED_GROUP', group);
+  },
   async fetchGroups({ commit }) {
       const response = await axios.get(`${apiUrl}/groups`);
-      commit('setGroups', response.data);
+      commit('SET_GROUPS', response.data);
   },
 };
 

@@ -1,0 +1,32 @@
+.v-card-custom {
+  width: 90%;
+  height: 100%;
+}
+
+.v-card-text-custom {
+  height: calc(100% - 80px);
+}
+
+.v-toolbar-custom {
+  height: 40px;
+}
+
+.center-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  font-size: 16px;
+}
+
+.title-text {
+  font-size: 1.5em;
+}
+
+.small-button {
+  font-size: 10px;
+}
+
+.v-calendar-custom {
+  height: 100%;
+}

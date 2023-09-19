@@ -66,21 +66,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
       user_id = resource.id
 
-      # すべてのユーザーについて、非表示レコードを作成します
-      User.all.each do |target_user|
-        if user_id != target_user.id
-          begin
-            UserVisibility.create(user_id: user_id, target_user_id: target_user.id, visibility: false)
-            UserVisibility.create(user_id: target_user.id, target_user_id: user_id, visibility: false)
-          rescue ActiveRecord::RecordInvalid => e
-            Rails.logger.error("Error creating UserVisibility for user_id=#{user_id} and target_user_id=#{target_user.id}: #{e.message}")
-          end
-        else
-          UserVisibility.create(user_id: user_id, target_user_id: target_user.id, visibility: true)
-        end
-      end
-      
-
       # 収集したグループのIDをもとに、中間テーブルにレコードを作成し、ユーザーIDとカレンダーIDを保存します
       calendar_ids.each do |calendar_id|
         Group.create(user_id: resource.id, calendar_id: calendar_id)

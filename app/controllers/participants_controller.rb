@@ -1,5 +1,14 @@
 class ParticipantsController < ApplicationController
-  # def index
+
+  def index
+    participants = Participant.includes(:user).all.map do |participant|
+      participant.attributes.merge({ 'user_name' => participant.user.name })  # participant.user.nameは仮定です。
+    end
+    render json: participants
+  end
+  
+
+  # def index_with_events
   #   # 予定参加者の一覧を返す
   #   participants = Participant.includes(:event, :user)
   #   participants_with_events_and_users = participants.as_json(include: { event: {}, user: { only: :name } })
@@ -67,6 +76,13 @@ class ParticipantsController < ApplicationController
   #   #カレントユーザー以外の全てのユーザーを返す
   #   render json: User.where.not(id: current_user.id)
   # end
+
+  def index_with_participants #カレントユーザーのイベントと参加イベントを返す
+    user_events = current_user.events
+    participant_events = current_user.participants.map(&:event)
+    all_events = user_events + participant_events
+    render json: { events: all_events, current_user: current_user }
+  end
 
   def all
     participants = Participant.all

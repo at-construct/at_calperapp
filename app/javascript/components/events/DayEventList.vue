@@ -71,18 +71,6 @@ export default {
 };
 </script>
 
-
-<style>
-.event-btn {
-  font-size: 12px;
-}
-
-.event-date {
-  font-size: 12px;
-}
-
-.event-name {
-  font-size: 12px;
-  font-weight: bold;
-}
-</style>  
+<style scoped lang="scss">
+  @import "../../../assets/stylesheets/day_event_list.scss";
+</style>

@@ -6,6 +6,7 @@ import users from './modules/users';
 import participants from './modules/participants';
 import groups from './modules/groups';
 import visibility from './modules/visibility';
+import notifications from './modules/notifications';
 
 Vue.use(Vuex);
 
@@ -17,5 +18,6 @@ export default new Vuex.Store({
     participants,
     groups,
     visibility,
+    notifications,
   }
 });
