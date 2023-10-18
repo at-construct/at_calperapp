@@ -3,7 +3,7 @@
     <!-- ヘッダー -->
     <v-sheet max-height="10vh">
       <v-toolbar flat>
-        <v-app-bar-nav-icon @click.stop="drawer = !drawer" class="ml-auto">
+        <v-app-bar-nav-icon @click.stop="drawer = !drawer">
         </v-app-bar-nav-icon>
 
         <v-btn icon class="ml-auto" @click="$refs.calendar.prev()">
@@ -18,12 +18,17 @@
           <v-icon>mdi-chevron-right</v-icon>
         </v-btn>
 
-        <v-btn outlined x-small class="mr-auto btn-small" @click="setToday">
+        <v-btn
+          class="today-btn"
+          outlined
+          x-small
+          @click="setToday"
+        >
           今日
         </v-btn>
 
         <!-- ヘッダーの中のベルマークのボタン -->
-        <v-btn icon class="mr-auto" @click="showNotificationDialog">
+        <v-btn icon @click="showNotificationDialog">
           <v-icon>mdi-bell-outline</v-icon>
           <v-badge
             v-if="hasUnreadNotifications"
@@ -36,7 +41,6 @@
         <v-dialog v-model="dialog" :key="dialogKey">
           <NotificationDialog @close="dialog = false" />
         </v-dialog>
-
       </v-toolbar>
     </v-sheet>
 
@@ -71,7 +75,7 @@
           :events="events"
           :type="type"
           @change="handleChange"
-          color="primary"
+          color="info"
           locale="ja-jp"
           :day-format="timestamp => new Date(timestamp.date).getDate()"
           :month-format="timestamp => new Date(timestamp.date).getMonth() + 1 + ' /'"
@@ -79,10 +83,16 @@
           @click:day="initEvent"
           @click:date="showDayEvents"
           @click:more="showDayEvents"
-        ></v-calendar>
+        >
+          <template v-slot:event="{ event }">
+            <div :style="{ fontSize: '14px' }">
+              {{ event.name }}
+            </div>
+          </template>
+        </v-calendar>
       </v-sheet>
-    </v-sheet>
 
+    </v-sheet>
     <!-- カレンダー直下にプラスボタン-->
     <v-sheet max-height="8vh">
       <v-toolbar flat>
@@ -127,8 +137,7 @@
       <v-dialog
         :value="clickedDate !== null"
         persistent
-        max-width="800"
-        max-high="800"
+        fullscreen
       >
         <DayEventList />
       </v-dialog>
@@ -145,6 +154,7 @@ import DayEventList from '../events/DayEventList';
 import CalendarList from '../calendars/CalendarList';
 import { getDefaultStartAndEnd } from '../../functions/datetime';
 import NotificationDialog from '../notifications/NotificationDialog';
+
 
 export default {
   name: 'Calendar',
@@ -239,7 +249,7 @@ export default {
         start,
         end,
         timed: true,
-        color: '#1976d2',
+        color: '#2196F3',
         description: '',
         calendarId: null,
         user: [],
@@ -270,6 +280,41 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
-  @import "../../../assets/stylesheets/calendar.scss";
+<style>
+
+.v-toolbar-title {
+  font-size: 20px !important;
+}
+
+.btn-small {
+  font-size: 10px;
+}
+
+.today-btn {
+  margin-right: auto;
+}
+
+.list-item-title {
+  font-size: 14px;
+}
+
+/* カレンダーの日付の大きさ */
+.v-btn__content {
+  font-size: 14px !important;
+}
+
+/* カレンダーの曜日の大きさ */
+.v-calendar-weekly__head-weekday {
+  font-size: 12px !important;
+}
+
+.saturday {
+  background: rgba(200, 200, 250, 0.2);
+}
+.sunday {
+  background: rgba(250, 200, 200, 0.2);
+}
+
+/* 下記のSCSSだとHEROKUアプリ上で反映されないので、上記のSCSSに変更 */
+  /* @import "../../../assets/stylesheets/calendar.scss"; */
 </style>

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const apiUrl = 'https://atcalperapp.herokuapp.com';
+const apiUrl = 'https://localhost:9292';
 
 const state = {
   visibilities: [],

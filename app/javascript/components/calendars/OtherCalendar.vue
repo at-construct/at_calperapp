@@ -36,13 +36,20 @@
         v-model="value"
         :events="userEvents.concat(participantAllUserEvents)"
         @change="handleCalendarChange"
+        color="#BCAAA4"
         class="v-calendar-custom"
         locale="ja-jp"
         :day-format="timestamp => new Date(timestamp.date).getDate()"
         :month-format="timestamp => new Date(timestamp.date).getMonth() + 1 + ' /'"
         @click:date="showDayEvents"
         @click:more="showDayEvents"
-      ></v-calendar>
+      >
+        <template v-slot:event="{ event }">
+          <div :style="{ fontSize: '14px' }">
+              {{ event.name }}
+          </div>
+        </template>
+      </v-calendar>
 
       <!-- 日付クリック時のイベント一覧ダイアログ -->
       <v-dialog
@@ -54,8 +61,6 @@
         <OtherDayEventList :userEvents="userEvents" :selectedGroup="selectedGroup" />
 
       </v-dialog>
-
-      
     </v-card-text>
   </v-card>
 </template>
@@ -102,6 +107,7 @@ export default {
     handleCalendarChange(newValue) {
       this.fetchAllEvents(); // 全てのイベントを取得
       this.fetchParticipantAllEvents(); // 全ての参加者を取得
+      this.changeColor();
     },
     ...mapActions('calendars', ['fetchCalendars']),
     ...mapActions('events', ['fetchUserSpecificEvents', 'setEvent', 'otherSetClickedDate', 'fetchAllEvents', 'resetOtherStates']),
@@ -133,10 +139,93 @@ export default {
       // ユーザーIDを引数としてイベントを取得
       this.fetchUserSpecificEvents(this.selectedGroup.user.id, date);
     },
+    changeColor: function() {
+      setTimeout(() => {
+        const dayList = Array.from(
+          this.$refs.calendar.$vnode.elm.getElementsByClassName(
+            'v-calendar-weekly__week'
+          )
+        );
+        dayList.map(el => {
+          el.children[0].classList.add('sunday');
+          el.children[6].classList.add('saturday');
+        });
+      });
+    },
   }
 };
 </script>
 
-<style scoped lang="scss">
-  @import "../../../assets/stylesheets/other_calendar.scss";
+<style>
+
+.custom-sheet {
+  max-height: 6vh !important;
+  margin-top: -8px !important;
+}
+
+.custom-toolbar {
+  height: 6vh !important;
+  min-height: 6vh !important;
+}
+
+.center-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50%;
+  margin: 0;
+  padding: 0;
+}
+
+.v-card-custom {
+  width: 100%;
+  height: 100%;
+}
+
+.v-card-text-custom {
+  height: 100%;
+  height: 100%;
+}
+
+.center-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  font-size: 16px;
+}
+
+.title-text {
+  font-size: 1.5em;
+}
+
+.small-button {
+  font-size: 10px;
+}
+
+.v-calendar-custom {
+  height: 110%;
+}
+
+.today-btn {
+  margin-right: auto;
+}
+
+/* カレンダーの日付の大きさ */
+.v-btn__content {
+  font-size: 14px !important;
+}
+
+/* カレンダーの曜日の大きさ */
+.v-calendar-weekly__head-weekday {
+  font-size: 12px !important;
+}
+
+.saturday {
+  background: rgba(200, 200, 250, 0.2);
+}
+.sunday {
+  background: rgba(250, 200, 200, 0.2);
+}
+  /* @import "../../../assets/stylesheets/other_calendar.scss"; */
 </style>
