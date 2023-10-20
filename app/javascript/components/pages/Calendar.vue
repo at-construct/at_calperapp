@@ -69,27 +69,23 @@
       <!-- ホームカレンダー -->
       <!-- :events="events.concat(participantEvents)" 削除した-->
       <v-sheet height="100vh" class="flex">
-        <v-calendar
-          ref="calendar"
-          v-model="value"
-          :events="events"
-          :type="type"
-          @change="handleChange"
-          color="info"
-          locale="ja-jp"
-          :day-format="timestamp => new Date(timestamp.date).getDate()"
-          :month-format="timestamp => new Date(timestamp.date).getMonth() + 1 + ' /'"
-          @click:event="showEvent"
-          @click:day="initEvent"
-          @click:date="showDayEvents"
-          @click:more="showDayEvents"
-        >
-          <template v-slot:event="{ event }">
-            <div :style="{ fontSize: '14px' }">
-              {{ event.name }}
-            </div>
-          </template>
-        </v-calendar>
+<v-calendar
+  ref="calendar"
+  v-model="value"
+  :events="events"
+  :type="type"
+  @change="handleChange"
+  color="info"
+  locale="ja-jp"
+  :day-format="timestamp => new Date(timestamp.date).getDate()"
+  :month-format="timestamp => new Date(timestamp.date).getMonth() + 1 + ' /'"
+  @click:event="showEvent"
+  @click:day="initEvent"
+  @click:date="showDayEvents"
+  @click:more="showDayEvents"
+>
+</v-calendar>
+
       </v-sheet>
 
     </v-sheet>
@@ -296,6 +292,11 @@ export default {
 
 .list-item-title {
   font-size: 14px;
+}
+
+/* カレンダーのイベントバーの位置 */
+.v-event.v-event-start {
+  margin-left: 2px;
 }
 
 /* カレンダーの日付の大きさ */
