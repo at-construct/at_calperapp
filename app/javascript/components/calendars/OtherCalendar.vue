@@ -36,7 +36,7 @@
         v-model="value"
         :events="userEvents.concat(participantAllUserEvents)"
         @change="handleCalendarChange"
-        color="#BCAAA4"
+        color="#BDBDBD"
         class="v-calendar-custom"
         locale="ja-jp"
         :day-format="timestamp => new Date(timestamp.date).getDate()"
@@ -44,11 +44,6 @@
         @click:date="showDayEvents"
         @click:more="showDayEvents"
       >
-        <template v-slot:event="{ event }">
-          <div :style="{ fontSize: '14px' }">
-              {{ event.name }}
-          </div>
-        </template>
       </v-calendar>
 
       <!-- 日付クリック時のイベント一覧ダイアログ -->

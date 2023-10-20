@@ -1,5 +1,7 @@
 <template>
+  
   <v-card class="pb-12">
+
     <v-card-actions class="d-flex pa-2">
       <v-btn icon @click="del">
         <v-icon size="20px">mdi-trash-can-outline</v-icon>
@@ -26,10 +28,11 @@
     </v-dialog>
 
     <v-card-title>
-      <DialogSection icon="mdi-square" :color="event.color" class="event-name event-font-size-large">
-        {{ event.name }}
+      <DialogSection icon="mdi-square" :color="event.color">
+        <span class="large-text">{{ event.name }}</span>
       </DialogSection>
     </v-card-title>
+    <br>
     <v-card-text>
       <DialogSection icon="mdi-clock-time-three-outline" class="event-date event-font-size-small">
         {{ event.startDate }}{{ event.timed ? ' ' + event.startTime : ''}} ~
@@ -37,28 +40,45 @@
         {{ event.timed ? event.endTime : ' 終日' }}
       </DialogSection>
     </v-card-text>
+
     <v-card-text>
       <DialogSection icon="mdi-card-text-outline" class="event-description event-font-size-small">
-        {{ event.description || '予定の説明なし' }}
+        <div class="title-text">詳細</div>
+      </DialogSection>
+      <DialogSection class="event-description event-font-size-small margin-text">
+        {{ event.description || 'なし' }}
       </DialogSection>
     </v-card-text>
+
     <v-card-text>
-    <!-- v-forディレクティブを使ってparticipantUsersからユーザー名を表示 -->
-    <DialogSection icon="mdi-account-group-outline" class="event-participants event-font-size-small">
-      参加予定者<br>{{ (participantUsers.length > 0 && getUniqueParticipants(event, participantUsers).map(user => user.name).join(', ')) || 'なし' }}
-    </DialogSection>
-        </v-card-text>
-        <v-card-text>
-    <!-- v-forディレクティブを使ってparticipantUsersから施設名を表示 -->
-    <DialogSection icon="mdi-office-building-outline" class="event-facilities event-font-size-small">
-      利用予定設備<br>{{ (participantUsers.length > 0 && getUniqueFacilities(event, participantUsers).map(user => user.name).join(', ')) || 'なし' }}
-    </DialogSection>
+      <!-- v-forディレクティブを使ってparticipantUsersからユーザー名を表示 -->
+      <DialogSection icon="mdi-account-group-outline" class="event-participants event-font-size-small">
+        <div class="title-text">参加予定者</div>
+      </DialogSection>
+      <DialogSection class="event-participants event-font-size-small margin-text">
+        {{ (participantUsers.length > 0 && getUniqueParticipants(event, participantUsers).map(user => user.name).join(', ')) || 'なし' }}
+      </DialogSection>
     </v-card-text>
+
+    <v-card-text>
+      <!-- v-forディレクティブを使ってparticipantUsersから施設名を表示 -->
+      <DialogSection icon="mdi-office-building-outline" class="event-facilities event-font-size-small">
+        <div class="title-text">利用予定設備</div>
+      </DialogSection>
+      <DialogSection class="event-facilities event-font-size-small margin-text">
+        {{ (participantUsers.length > 0 && getUniqueFacilities(event, participantUsers).map(user => user.name).join(', ')) || 'なし' }}
+      </DialogSection>
+    </v-card-text>
+
     <v-card-text>
       <DialogSection icon="mdi-head-outline" class="event-creator event-font-size-small">
-        作成者<br>{{ event.user_name || 'なし' }}
+        <div class="title-text">作成者</div>
+      </DialogSection>
+      <DialogSection class="event-creator event-font-size-small margin-text">
+        {{ event.user_name || 'なし' }}
       </DialogSection>
     </v-card-text>
+
   </v-card>
 </template>
 
@@ -159,6 +179,52 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
-  @import "../../../assets/stylesheets/event_detail_dialog.scss";
+<style scoped>
+
+.large-text {
+  font-size: 18px;
+  margin-bottom: 5px;
+  color: black;
+}
+
+.title-text {
+  font-size: 14px;
+  margin-bottom: 5px;
+  color: grey;
+}
+
+.event-font-size-small {
+  font-size:14px;
+  color: black;
+}
+
+.event-description {
+  line-height: 1.6;
+  white-space: pre-line;
+  word-wrap: break-word;
+  margin-bottom: 0; 
+  margin-top: 0;
+}
+
+.margin-text {
+  margin-top: -50px; /* 上のマージンをマイナス値に設定して詳細に近づける */
+}
+
+.event-participants {
+  line-height: 1.6;  /* 行の高さを調整 */
+  white-space: pre-line;  /* 改行を認識させる */
+  word-wrap: break-word;  /* 単語がはみ出したら折り返す */
+}
+
+.event-creator {
+  line-height: 1.6;
+  white-space: pre-line;
+  word-wrap: break-word; 
+}
+.event-facilities {
+  line-height: 1.6;
+  white-space: pre-line;
+  word-wrap: break-word;
+}
+
 </style>

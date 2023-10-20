@@ -45,8 +45,10 @@ heroku-v7.66.4
 
 #機能要件一覧
 ![機能要件一覧](https://user-images.githubusercontent.com/63837993/120589195-72b9e280-c473-11eb-8043-143d4a605ce8.png)
+
 #ER図
-![ER図](https://user-images.githubusercontent.com/63837993/120589210-78afc380-c473-11eb-9755-4b20dc386cb1.png)
+![ER図](https://drive.google.com/file/d/16WPz3Gy2zRo2jvZ1gurGjPuHZK5V9D_e/view?usp=sharing)
+
 #ワイヤーフレーム
 ![ワイヤーフレーム]
 (https://www.figma.com/file/9sbh0YsDvY7A1g6dT118Wg/CalApp-FrameWork?type=design&node-id=0%3A1&mode=design&t=knC9uxerccmTCOUC-1)

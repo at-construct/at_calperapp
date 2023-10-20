@@ -1,55 +1,62 @@
 <div class="box">
-  <div class="box-inner">
-    <h2 class="text-center">新規登録</h2>
+<div class="box-inner">
+  <h2 class="text-center">新規登録</h2>
+  <br>
+  <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+    <%= render "devise/shared/error_messages", resource: resource %>
+    
+    <div class="box-email">
+      <%= f.label :email %><br />
+      <%= f.email_field :email %>
+    </div>
     <br>
-    <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-      <%= render "devise/shared/error_messages", resource: resource %>
-      
-      <div class="box-email">
-        <%= f.label :email %><br />
-        <%= f.email_field :email %>
-      </div>
-      <br>
 
-      <div class="box-text">
-        <%= f.label :name %><br />
-        <%= f.text_field :name %>
-      </div>
-      <br>
+    <div class="box-text">
+      <%= f.label :name %><br />
+      <%= f.text_field :name %>
+    </div>
+    <br>
 
-      <div class="box-password">
-        <%= f.label :password %>
-        <% if @minimum_password_length %>
-          <em>(<%= @minimum_password_length %>文字以上で設定してください)</em>
-        <% end %>
-        <br />
-        <%= f.password_field :password %>
-      </div>
-      <br>
-
-      <div class="box-password">
-        <%= f.label :password_confirmation %><br />
-        <%= f.password_field :password_confirmation %>
-      </div>
-      <br>
-
-      <% if Calendar.any? %>
-        <div class="box-calendar">
-          <%= f.label :calendar_ids, "所属する会社を選んでください" %><br />
-          <div class="checkbox">
-            <%= collection_check_boxes(:user, :calendar_ids, Calendar.all, :id, :name) do |b| %>
-              <%= b.label { b.check_box + b.text } %>
-            <% end %>
-          </div>
-        </div>
-        <br>
+    <div class="box-password">
+      <%= f.label :password %>
+      <% if @minimum_password_length %>
+        <em>(<%= @minimum_password_length %>文字以上で設定してください)</em>
       <% end %>
+      <br />
+      <%= f.password_field :password %>
+    </div>
+    <br>
 
-      <button type="submit" class="btn btn-primary btn-block">新規登録</button>
+    <div class="box-password">
+      <%= f.label :password_confirmation %><br />
+      <%= f.password_field :password_confirmation %>
+    </div>
+    <br>
+
+    <% 
+    # 除外したいカレンダーの名前を配列に格納します。
+    excluded_calendar_names = ['会議室', '社用車', 'スタジオ']
+    # Calendar.allから、除外したいカレンダーをフィルタリングします。
+    available_calendars = Calendar.all.reject { |calendar| excluded_calendar_names.include?(calendar.name) }
+    %>
+
+    <% if available_calendars.any? %>
+      <div class="box-calendar">
+        <%= f.label :calendar_ids, "所属する会社を選んでください" %><br />
+        <div class="checkbox">
+          <%= collection_check_boxes(:user, :calendar_ids, available_calendars, :id, :name) do |b| %>
+            <%= b.label { b.check_box + b.text } %>
+          <% end %>
+        </div>
+      </div>
+      <br>
     <% end %>
 
-    <%= render "devise/shared/links" %>
-  </div>
+    <button type="submit" class="btn btn-primary btn-block">新規登録</button>
+  <% end %>
+
+  <%= render "devise/shared/links" %>
+</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
@@ -57,48 +64,48 @@
 
 <style>
 * {
-  margin: 0px;
-  padding: 0px;
-  text-decoration: none;
+margin: 0px;
+padding: 0px;
+text-decoration: none;
 }
 .box {
-  width: 400px;
-  height: 650px;
-  margin: 60px auto 0;
-  border-radius: 4px;
+width: 400px;
+height: 650px;
+margin: 60px auto 0;
+border-radius: 4px;
 }
 
 .box-inner {
-  padding: 20px 26px;
+padding: 20px 26px;
 }
 
 .box-email {
-  margin-bottom: 13px;
+margin-bottom: 13px;
 }
 
 .box-text {
-  margin-bottom: 13px;
+margin-bottom: 13px;
 }
 
 .box-password {
-  margin-bottom: 13px;
+margin-bottom: 13px;
 }
 
 .box-email input[type="email"], 
 .box-text input[type="text"], 
 .box-password input[type="password"] {
-  border-style: none;
-  box-sizing: border-box;
-  width: 100%;
-  height: 35px;
-  border: 1px solid #a6a6a6;
-  box-shadow: 0 1px 0 rgba(0,0,0,.07) inset;
-  border-radius: 3px;
-  padding: 0 7px;
+border-style: none;
+box-sizing: border-box;
+width: 100%;
+height: 35px;
+border: 1px solid #a6a6a6;
+box-shadow: 0 1px 0 rgba(0,0,0,.07) inset;
+border-radius: 3px;
+padding: 0 7px;
 }
 
 .checkbox label {
-  margin-right: 20px;
-  margin-top: 10px;
+margin-right: 20px;
+margin-top: 10px;
 }
 </style>

@@ -84,11 +84,6 @@
   @click:date="showDayEvents"
   @click:more="showDayEvents"
 >
-  <template v-slot:event="{ event }">
-    <div :style="{ fontSize: '14px', textAlign: 'center' }">
-      {{ event.name }}
-    </div>
-  </template>
 </v-calendar>
 
       </v-sheet>
@@ -301,7 +296,7 @@ export default {
 
 /* カレンダーのイベントバーの位置 */
 .v-event.v-event-start {
-  margin-left: 3px;
+  margin-left: 2px;
 }
 
 /* カレンダーの日付の大きさ */
