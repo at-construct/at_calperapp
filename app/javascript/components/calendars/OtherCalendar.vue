@@ -1,6 +1,5 @@
 <template>
   <v-card class="v-card-custom">
-    <v-card-text class="v-card-text-custom">
       <v-sheet max-height="6vh">
         <v-toolbar flat class="v-toolbar-custom">
           <div class="center-content">
@@ -26,7 +25,7 @@
             <v-icon>mdi-chevron-right</v-icon>
           </v-btn>
   
-          <v-btn outlined x-small class="mr-auto small-button" @click="setToday">
+          <v-btn outlined x-small class="mr-auto small-button text-h6" @click="setToday">
             今日
           </v-btn>
         </v-toolbar>
@@ -56,7 +55,6 @@
         <OtherDayEventList :userEvents="userEvents" :selectedGroup="selectedGroup" />
 
       </v-dialog>
-    </v-card-text>
   </v-card>
 </template>
 
@@ -163,14 +161,6 @@ export default {
   min-height: 6vh !important;
 }
 
-.center-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 50%;
-  margin: 0;
-  padding: 0;
-}
 
 .v-card-custom {
   width: 100%;
@@ -195,25 +185,15 @@ export default {
 }
 
 .small-button {
-  font-size: 10px;
+  font-size: 14px;
 }
 
 .v-calendar-custom {
-  height: 110%;
+  height: 100%;
 }
 
 .today-btn {
   margin-right: auto;
-}
-
-/* カレンダーの日付の大きさ */
-.v-btn__content {
-  font-size: 14px !important;
-}
-
-/* カレンダーの曜日の大きさ */
-.v-calendar-weekly__head-weekday {
-  font-size: 12px !important;
 }
 
 .saturday {
