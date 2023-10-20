@@ -18,13 +18,8 @@
           <v-icon>mdi-chevron-right</v-icon>
         </v-btn>
 
-        <v-btn
-          class="today-btn"
-          outlined
-          x-small
-          @click="setToday"
-        >
-          今日
+        <v-btn outlined x-small class="mr-auto small-button text-h6" @click="setToday">
+            今日
         </v-btn>
 
         <!-- ヘッダーの中のベルマークのボタン -->
@@ -276,14 +271,14 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 
 .v-toolbar-title {
   font-size: 20px !important;
 }
 
 .btn-small {
-  font-size: 10px;
+  font-size: 14px;
 }
 
 .today-btn {
@@ -292,21 +287,6 @@ export default {
 
 .list-item-title {
   font-size: 14px;
-}
-
-/* カレンダーのイベントバーの位置 */
-.v-event.v-event-start {
-  margin-left: 2px;
-}
-
-/* カレンダーの日付の大きさ */
-.v-btn__content {
-  font-size: 14px !important;
-}
-
-/* カレンダーの曜日の大きさ */
-.v-calendar-weekly__head-weekday {
-  font-size: 12px !important;
 }
 
 .saturday {

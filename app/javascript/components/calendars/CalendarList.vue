@@ -5,22 +5,25 @@
     <v-list-item-group :value="selectedItem">
       <v-list-group v-for="calendar in filteredCalendars" :key="calendar.id" class="mb-3">
         <template v-slot:activator>
-          <v-list-item-title class="list-item-title">
+          <v-list-item-title class="list-item-title d-flex justify-space-between align-center">
             <v-icon :color="calendar.color" class="icon" small>mdi-square</v-icon>
               <span class="calendar-name">{{ calendar.name }}</span>
-            <!-- <v-btn icon @click="edit(calendar)">
-              <v-menu transition="scale-transition" offset-y min-width="100px">
-                <template v-slot:activator="{ on }">
-                  <v-btn icon v-on="on">
-                    <v-icon size="12px">mdi-pencil</v-icon>
-                  </v-btn>
-                </template>
-                <v-list>
-                  <v-list-item @click="edit(calendar)">編集</v-list-item>
-                  <v-list-item @click="del(calendar)">削除</v-list-item>
-                </v-list>
-              </v-menu>
-            </v-btn> -->
+
+                <v-btn icon class="align-self-end" @click="edit(calendar)">
+                  <!-- カレンダーリストの編集機能 -->
+                  <v-menu transition="scale-transition" offset-y min-width="100px">
+                    <template v-slot:activator="{ on }">
+                      <v-btn icon v-on="on">
+                        <v-icon size="12px">mdi-pencil</v-icon>
+                      </v-btn>
+                    </template>
+                    <v-list>
+                      <v-list-item @click="edit(calendar)">編集</v-list-item>
+                      <v-list-item @click="del(calendar)">削除</v-list-item>
+                    </v-list>
+                  </v-menu>
+                </v-btn>
+
           </v-list-item-title>
         </template>
 
@@ -49,9 +52,25 @@
     <!-- 設備カレンダーを表示する -->
     <v-list-group :value="false" v-for="calendar in facilityCalendar" :key="calendar.id">
       <template v-slot:activator>
-        <v-list-item-title class="facility-list-item-title">
+        <v-list-item-title class="list-item-title d-flex justify-space-between align-center">
           <v-icon :color="calendar.color" class="icon" small>mdi-square</v-icon>
           <span class="calendar-name">{{ calendar.name }}</span>
+
+            <v-btn icon class="align-self-end" @click="edit(calendar)">
+              <!-- カレンダーリストの編集機能 -->
+              <v-menu transition="scale-transition" offset-y min-width="100px">
+                <template v-slot:activator="{ on }">
+                  <v-btn icon v-on="on">
+                    <v-icon size="12px">mdi-pencil</v-icon>
+                  </v-btn>
+                </template>
+                <v-list>
+                  <v-list-item @click="edit(calendar)">編集</v-list-item>
+                  <v-list-item @click="del(calendar)">削除</v-list-item>
+                </v-list>
+              </v-menu>
+            </v-btn>
+
         </v-list-item-title>
       </template>
 
@@ -75,7 +94,7 @@
     </v-list-group>
 
     <!-- リストを追加処理 -->
-    <!-- <v-list-item>
+    <v-list-item>
       <v-list-item-content>
         <v-subheader class="font-size-small">リストを追加</v-subheader>
       </v-list-item-content>
@@ -94,7 +113,7 @@
       >
         <CalendarFormDialog v-if="calendar !== null" />
       </v-dialog>
-    </template> -->
+    </template>
 
     <!-- OtherCalendarコンポーネントを呼び出す -->
     <v-dialog
@@ -187,6 +206,12 @@ export default {
     },
     handleOtherCalendarClose() {
       this.isCalendarDialogOpen = false;
+    },
+    edit(calendar) {
+      this.setCalendar(calendar);
+    },
+    del(calendar) {
+      this.deleteCalendar(calendar.id);
     },
   }
 };
