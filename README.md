@@ -1,11 +1,12 @@
-![ScheduleSproutアイコン](/assets/ScheduleSprout_readme.png)
+
+![ScheduleSprout_readme](https://github.com/at-construct/at_calperapp/assets/53667957/ae709d2e-bb89-4c44-bba4-1de151504390)
 
 【アプリについて】
 ログインは、セットされているてtestアカウントでログインできます。
 le Sprout（スケジュールスプラウト）は複数のカレンダーを共有しながら、スケジュールを管理できるアプリです。
 この名は新しい計画やアイディアが「芽吹く」場所というイメージから名付けました。
 
-![Schedule Sprout](https://atcalperapp.herokuapp.com)
+https://atcalperapp.herokuapp.com
 
 SPAを採用し、スマートデバイスで扱いすやすいように設計しています。
 特定のニッチなユーザーグループや特定の目的（例：家族、小規模企業、地域コミュニティ、学校プロジェクトなど）に最適化された機能を提供し、共有の簡易化を目指したカレンダーアプリです。
@@ -48,10 +49,9 @@ Docker version 20.10.21
 RSpec: version 3.12
 
 【ER図】
-![ER図](https://drive.google.com/file/d/16WPz3Gy2zRo2jvZ1gurGjPuHZK5V9D_e/view?usp=sharing)
+https://drive.google.com/file/d/16WPz3Gy2zRo2jvZ1gurGjPuHZK5V9D_e/view?usp=sharing
 
 【ワイヤーフレーム】
-![ワイヤーフレーム]
-(https://www.figma.com/file/9sbh0YsDvY7A1g6dT118Wg/CalApp-FrameWork?type=design&node-id=0%3A1&mode=design&t=knC9uxerccmTCOUC-1)
+https://www.figma.com/file/9sbh0YsDvY7A1g6dT118Wg/CalApp-FrameWork?type=design&node-id=0%3A1&mode=design&t=knC9uxerccmTCOUC-1
 
 
