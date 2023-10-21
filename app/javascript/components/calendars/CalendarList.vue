@@ -19,7 +19,7 @@
                     </template>
                     <v-list>
                       <v-list-item @click="edit(calendar)">編集</v-list-item>
-                      <v-list-item @click="del(calendar)">削除</v-list-item>
+                      <v-list-item @click="confirmDeletion(calendar)">削除</v-list-item>
                     </v-list>
                   </v-menu>
                 </v-btn>
@@ -72,6 +72,24 @@
             </v-btn>
 
         </v-list-item-title>
+          <v-dialog
+            v-model="isDeleteDialogOpen"
+            max-width="420"
+          >
+            <v-card>
+              <v-card-title class="headline">このカレンダーを削除しますか？</v-card-title>
+          
+              <v-card-text class="text-h6">
+                ※関連する予定も削除されます
+              </v-card-text>
+          
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn text color="red" @click="agreeToDelete" class="text-h6">削除</v-btn> <!-- ここを`agreeToDelete`に修正 -->
+                <v-btn color="primary" text @click="cancelDeletion" class="text-h6">キャンセル</v-btn> <!-- ここを`cancelDeletion`に修正 -->
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
       </template>
 
       <v-list-item-group>
@@ -96,7 +114,7 @@
     <!-- リストを追加処理 -->
     <v-list-item>
       <v-list-item-content>
-        <v-subheader class="font-size-small">リストを追加</v-subheader>
+        <v-subheader class="font-size-small">カレンダー追加</v-subheader>
       </v-list-item-content>
       <v-list-item-action>
         <v-btn icon @click="initCalendar">
@@ -128,6 +146,8 @@
       />
     </v-dialog>
   </v-list>
+
+
 </template>
 
 
@@ -152,8 +172,9 @@ export default {
       selectedGroups: [],
       selectedGroup: null,
       isCalendarDialogOpen: false,
-      // events:[],
       value: format(new Date(), 'yyyy/MM/dd'),
+      isDeleteDialogOpen: false,
+      calendarToDelete: null,  // 削除するカレンダーの情報を一時保存する
     }
   },
   computed: {
@@ -213,6 +234,22 @@ export default {
     del(calendar) {
       this.deleteCalendar(calendar.id);
     },
+
+    confirmDeletion(calendar) {
+      this.calendarToDelete = calendar; // 削除するカレンダーを保存
+      this.isDeleteDialogOpen = true; // ダイアログを表示
+    },
+  
+    agreeToDelete() {
+      this.deleteCalendar(this.calendarToDelete.id); // カレンダーを削除
+      this.isDeleteDialogOpen = false; // ダイアログを閉じる
+    },
+  
+    cancelDeletion() {
+      this.calendarToDelete = null; // 保存したカレンダー情報をクリア
+      this.isDeleteDialogOpen = false; // ダイアログを閉じる
+    },
+
   }
 };
 </script>
