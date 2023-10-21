@@ -22,7 +22,7 @@
         <v-card-title class="headline">この予定を削除しますか？</v-card-title>
         <v-card-actions>
           <v-btn text color="red" @click="deleteEventConfirmed" class="btn-delete">削除</v-btn>
-          <v-btn text @click="showDeleteConfirmation = false" class="btn-cancel">キャンセル</v-btn>
+          <v-btn text color="primary" @click="showDeleteConfirmation = false" class="btn-cancel">キャンセル</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -225,6 +225,11 @@ export default {
   line-height: 1.6;
   white-space: pre-line;
   word-wrap: break-word;
+}
+
+.btn-delete,
+.btn-cancel {
+  font-size: 14px;
 }
 
 </style>

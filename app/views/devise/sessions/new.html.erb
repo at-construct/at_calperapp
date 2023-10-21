@@ -1,43 +1,55 @@
 
 <div class="box">
   <div class="box-inner">
-    <h2 class="text-center">ログイン</h2>
+    <h3 class="text-center bold-text">ログイン</h3>
+    <br/>
 
-    <% if flash[:alert].present? %>
-      <div class="alert alert-danger" role="alert">
-    <%= flash[:alert] %>
+    <% if flash[:alert] %>
+      <div id="alert">
+        <%= flash[:alert] %>
       </div>
     <% end %>
-
-    <br>
-
-<%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-  <div class="box-email">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, value: "test@test", autofocus: true, autocomplete: "email" %>
-  </div>
-  <br>
-  <div class="box-password">
-    <%= f.label :password %><br />
-    <%= f.password_field :password, value: "testtest", autocomplete: "current-password" %>
-  </div>
-  
-  <!--
-  <% if devise_mapping.rememberable? %>
-    <div class="field">
-      <%= f.check_box :remember_me %>
-      <%= f.label :remember_me %>
-    </div>
-  <% end %>
-  -->
-  <br>
-  <button type="submit" class="btn btn-primary btn-block">ログイン</button>
-<% end %>
+    
+    <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+      <div class="box-email">
+        <%= f.label :email %><br />
+        <%= f.email_field :email, value: "test@test", autofocus: true, autocomplete: "email" %>
+      </div>
+      <br>
+      <div class="box-password">
+        <%= f.label :password %><br />
+        <%= f.password_field :password, value: "testtest", autocomplete: "current-password" %>
+      </div>
+    
+      <br>
+      <button type="submit" class="btn btn-primary btn-block">ログイン</button>
+    <% end %>
 
     <%= render "devise/shared/links" %>
 
   </div>
 </div>
 
+<style>
+
+#alert {
+  text-align: center; /* テキストを中央寄せにする */
+  width: 100%; /* 要素をコンテナの幅いっぱいに広げる */
+  margin-top: 20px; /* トップのマージン、必要に応じて調整 */
+  margin-bottom: 20px; /* ボトムのマージン、必要に応じて調整 */
+  color: red;
+  margin-bottom: 20px;
+}
+
+.box-email {
+  margin-bottom: 20px;
+}
+.box-password {
+  margin-bottom: 20px;
+}
+.bold-text {
+  font-weight: bold;
+}
+</style>
 
 
