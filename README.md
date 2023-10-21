@@ -42,9 +42,10 @@ Schedule Sproutは、複数のカレンダーを共有しながらスケジュ�
 完全な技術スタックのリストは、上記を参照してください。
 
 ## 開発ドキュメント
-![スクリーンショット 2023-10-22 7 59 28](https://github.com/at-construct/at_calperapp/assets/53667957/b7b4d1ac-6200-439c-be53-8963fa692911)
 - **ER図**: [draw.ioで見る](https://drive.google.com/file/d/16WPz3Gy2zRo2jvZ1gurGjPuHZK5V9D_e/view?usp=sharing)
+![スクリーンショット 2023-10-22 7 59 28](https://github.com/at-construct/at_calperapp/assets/53667957/b7b4d1ac-6200-439c-be53-8963fa692911)
 
-![スクリーンショット 2023-10-22 8 04 26](https://github.com/at-construct/at_calperapp/assets/53667957/5bf26daf-3a30-46fc-92ed-2e9c8c0ee2bb)
   - **ワイヤーフレーム**: [Figmaで見る](https://www.figma.com/file/9sbh0YsDvY7A1g6dT118Wg/CalApp-FrameWork?type=design&node-id=0%3A1&mode=design&t=knC9uxerccmTCOUC-1)
+![スクリーンショット 2023-10-22 8 04 26](https://github.com/at-construct/at_calperapp/assets/53667957/5bf26daf-3a30-46fc-92ed-2e9c8c0ee2bb)
+
 
