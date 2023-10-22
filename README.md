@@ -48,7 +48,7 @@ Schedule Sproutは、複数のカレンダーを共有しながらスケジュ�
 
 
   - **ワイヤーフレーム**: [Figmaで見る](https://www.figma.com/file/9sbh0YsDvY7A1g6dT118Wg/CalApp-FrameWork?type=design&node-id=0%3A1&mode=design&t=knC9uxerccmTCOUC-1)
-  - 
+
 ![スクリーンショット 2023-10-22 8 04 26](https://github.com/at-construct/at_calperapp/assets/53667957/5bf26daf-3a30-46fc-92ed-2e9c8c0ee2bb)
 
 
