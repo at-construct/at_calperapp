@@ -1,6 +1,6 @@
 # Schedule Sprout
 
-Schedule Sproutは、複数のカレンダーを共有しながらスケジュールを管理できるアプリケーションです。新しい計画やアイディアが「芽吹く」場所というコンセプトから、この名が名付けられました。
+Schedule Sproutは、複数のカレンダーを共有しながらスケジュールを管理できるアプリケーションです。新しい計画が「芽吹く」場所というコンセプトから、名付けています。
 
 ![ScheduleSprout Logo](https://github.com/at-construct/at_calperapp/assets/53667957/ae709d2e-bb89-4c44-bba4-1de151504390)
 
