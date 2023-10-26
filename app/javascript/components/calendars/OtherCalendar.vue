@@ -103,19 +103,23 @@ export default {
       this.changeColor();
     },
     ...mapActions('calendars', ['fetchCalendars']),
-    ...mapActions('events', ['fetchUserSpecificEvents', 'setEvent', 'otherSetClickedDate', 'fetchAllEvents', 'resetOtherStates']),
+    ...mapActions('events', ['fetchUserSpecificEvents', 'setEvent', 'otherSetClickedDate', 'fetchAllEvents', 'resetOtherStates', 'fetchEvents']),
     ...mapActions('participants', ['fetchParticipantEvents', 'fetchParticipantAllEvents', 'fetchParticipantUsers']),
     setToday() {
       this.value = format(new Date(), 'yyyy/MM/dd');
     },
     async closeDialog() {
+      // 他のカレンダーのクリック日をリセット
       this.otherSetClickedDate(null);
+
+      // 他のカレンダーの予定をリセット
       await this.resetOtherStates();
-      this.clearDisplayedEventsInCalendar(); // 予定の表示をクリア
+
+      // 元のカレンダーの予定を再取得
+      await this.fetchEvents();
+      await this.fetchParticipantEvents();
+
       this.$emit('close');
-    },
-    clearDisplayedEventsInCalendar() {
-      this.$store.commit('events/setEvents', []); // events データを空の配列に設定
     },
     initEvent({ date }) {
       if (this.otherClickedDate !== null || !date) { // dateがnullの場合にもチェックする

@@ -12,10 +12,10 @@
     },
     "main_vue": {
       "js": [
-        "/packs/js/main_vue-9cde9a88ee6dcea5decb.js"
+        "/packs/js/main_vue-c63f2f45d64f95cd8edc.js"
       ],
       "js.map": [
-        "/packs/js/main_vue-9cde9a88ee6dcea5decb.js.map"
+        "/packs/js/main_vue-c63f2f45d64f95cd8edc.js.map"
       ]
     },
     "plugins/vue-axios": {
@@ -27,8 +27,8 @@
       ]
     }
   },
-  "main_vue.js": "/packs/js/main_vue-9cde9a88ee6dcea5decb.js",
-  "main_vue.js.map": "/packs/js/main_vue-9cde9a88ee6dcea5decb.js.map",
+  "main_vue.js": "/packs/js/main_vue-c63f2f45d64f95cd8edc.js",
+  "main_vue.js.map": "/packs/js/main_vue-c63f2f45d64f95cd8edc.js.map",
   "media/fonts/materialdesignicons-webfont.eot?v=6.9.96": "/packs/media/fonts/materialdesignicons-webfont-de316c4d.eot",
   "media/fonts/materialdesignicons-webfont.ttf?v=6.9.96": "/packs/media/fonts/materialdesignicons-webfont-ac55aef6.ttf",
   "media/fonts/materialdesignicons-webfont.woff2?v=6.9.96": "/packs/media/fonts/materialdesignicons-webfont-d5cba820.woff2",
