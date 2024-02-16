@@ -11,7 +11,7 @@ Schedule Sproutは、複数のカレンダーを共有しながらスケジュ�
 - 特定のユーザーグループや目的に最適化された機能
 - スマートデバイス対応のユーザーフレンドリーなデザイン
 
-アプリはこちらで体験できます: [Schedule Sprout on Heroku](https://atcalperapp.herokuapp.com)
+アプリはこちらで体験できます: [Schedule Sprout on Heroku](https://atcalperapp.herokuapp.com)(追記２４.０2にクローズ)
 
 ## 利用方法
 
